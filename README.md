@@ -1,5 +1,7 @@
 # dkvphotobooth
 
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
 Snap & Go — simple photobooth app (local dev).
 
 Quick start
