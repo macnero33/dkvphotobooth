@@ -1,3 +1,21 @@
+# dkvphotobooth
+
+Snap & Go — simple photobooth app (local dev).
+
+Quick start
+
+```bash
+cd ~/Downloads/dkvphotobooth
+npm install
+npm run dev
+# open http://localhost:5174/ (or the port printed by the dev server)
+```
+
+Notes
+- Allow camera access in your browser (Site settings or macOS System Settings).
+- If camera is unavailable, the app falls back to upload or generated previews.
+
+Repository: https://github.com/macnero33/dkvphotobooth
 # Snap & Go Photobooth
 
 A modern web-based photobooth application built with React Router, XState, and Cloudinary.
