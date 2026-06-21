@@ -1,83 +1,87 @@
-import { createClient } from '@supabase/supabase-js';
+// Vercel Serverless Function: deletes photo strips older than 1 hour.
+// Uses native fetch() to call Supabase REST API directly (no SDK needed).
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-const STORAGE_BUCKET = process.env.STORAGE_BUCKET || process.env.VITE_STORAGE_BUCKET || 'photo-strips';
+const SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE;
+const STORAGE_BUCKET =
+  process.env.STORAGE_BUCKET || process.env.VITE_STORAGE_BUCKET || 'photo-strips';
 const EXPIRY_MS = 1000 * 60 * 60; // 1 hour
+
+async function listFiles() {
+  const url = `${SUPABASE_URL}/storage/v1/object/list/${STORAGE_BUCKET}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+      apikey: SERVICE_ROLE_KEY,
+    },
+    body: JSON.stringify({
+      prefix: '',
+      limit: 100,
+      sortBy: { column: 'name', order: 'asc' },
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`List failed: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
+
+async function deleteFiles(fileNames) {
+  const url = `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+      apikey: SERVICE_ROLE_KEY,
+    },
+    body: JSON.stringify({ prefixes: fileNames }),
+  });
+  if (!res.ok) {
+    throw new Error(`Delete failed: ${res.status} ${await res.text()}`);
+  }
+  return res.json();
+}
 
 export default async function handler(request) {
   try {
-    if (request.method !== 'POST' && request.method !== 'GET') {
-      return new Response('Method Not Allowed', { status: 405 });
-    }
-
-    // Debug: log all available env var names (NOT values!)
-    const availableEnvKeys = Object.keys(process.env).filter(k =>
-      k.includes('SUPA') || k.includes('STOR') || k.includes('BASE')
-    );
-
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
       return new Response(
         JSON.stringify({
-          error: 'Supabase credentials missing.',
+          error: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY',
           hasUrl: !!SUPABASE_URL,
           hasKey: !!SERVICE_ROLE_KEY,
-          availableEnvKeys,
-          allEnvKeysCount: Object.keys(process.env).length,
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-    });
-
-    const { data, error } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .list('', { limit: 100, sortBy: { column: 'name', order: 'asc' } });
-
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
+    const files = await listFiles();
     const now = Date.now();
-    const expiredFiles = (data ?? [])
-      .map((file) => file.name)
+    const expired = (files || [])
+      .map((f) => f.name)
       .filter((name) => {
         const match = name.match(/^strip_(\d+)\.jpg$/);
         if (!match) return false;
-        const fileTimestamp = Number(match[1]);
-        return now - fileTimestamp > EXPIRY_MS;
+        return now - Number(match[1]) > EXPIRY_MS;
       });
 
-    let deletedCount = 0;
-    if (expiredFiles.length > 0) {
-      const { error: deleteError } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .remove(expiredFiles);
-
-      if (!deleteError) {
-        deletedCount = expiredFiles.length;
-      } else {
-        return new Response(
-          JSON.stringify({
-            error: `Delete failed: ${deleteError.message}`,
-            attempted: expiredFiles,
-          }),
-          { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
+    let deleted = 0;
+    if (expired.length > 0) {
+      await deleteFiles(expired);
+      deleted = expired.length;
     }
 
     return new Response(
       JSON.stringify({
-        deleted: deletedCount,
-        expiredFiles,
-        totalScanned: data?.length ?? 0,
+        deleted,
+        expiredFiles: expired,
+        totalScanned: (files || []).length,
         checkedAt: new Date().toISOString(),
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
@@ -86,7 +90,6 @@ export default async function handler(request) {
     return new Response(
       JSON.stringify({
         error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack?.split('\n').slice(0, 5).join('\n') : null,
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );

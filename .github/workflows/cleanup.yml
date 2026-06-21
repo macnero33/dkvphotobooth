@@ -1,0 +1,15 @@
+name: Cleanup expired photo strips
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel cleanup endpoint
+        run: |
+          curl -s -X POST https://dkvphotobooth.vercel.app/api/cleanup
