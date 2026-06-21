@@ -1,17 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Vercel Serverless Function: triggered by cron once per day
-// Deletes photo strips older than 1 hour from Supabase Storage.
-const SUPABASE_URL =
-  process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY;
-const STORAGE_BUCKET =
-  process.env.STORAGE_BUCKET || process.env.VITE_STORAGE_BUCKET || 'photo-strips';
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+const STORAGE_BUCKET = process.env.STORAGE_BUCKET || process.env.VITE_STORAGE_BUCKET || 'photo-strips';
 const EXPIRY_MS = 1000 * 60 * 60; // 1 hour
 
-export default async function handler(request: Request): Promise<Response> {
+export default async function handler(request) {
   try {
     if (request.method !== 'POST' && request.method !== 'GET') {
       return new Response('Method Not Allowed', { status: 405 });
@@ -20,8 +14,7 @@ export default async function handler(request: Request): Promise<Response> {
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
       return new Response(
         JSON.stringify({
-          error:
-            'Supabase credentials missing. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
+          error: 'Supabase credentials missing.',
           hasUrl: !!SUPABASE_URL,
           hasKey: !!SERVICE_ROLE_KEY,
         }),
@@ -46,8 +39,8 @@ export default async function handler(request: Request): Promise<Response> {
 
     const now = Date.now();
     const expiredFiles = (data ?? [])
-      .map((file: any) => file.name)
-      .filter((name: string) => {
+      .map((file) => file.name)
+      .filter((name) => {
         const match = name.match(/^strip_(\d+)\.jpg$/);
         if (!match) return false;
         const fileTimestamp = Number(match[1]);
@@ -86,7 +79,6 @@ export default async function handler(request: Request): Promise<Response> {
     return new Response(
       JSON.stringify({
         error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : null,
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
