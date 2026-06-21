@@ -7,17 +7,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Trigger cleanup of expired photo strips on page load.
-      // Vercel Functions don't work reliably in Hobby plan + Vite SPA,
-      // so we trigger the cleanup endpoint from the client side.
-      // This is safe — the endpoint only deletes files older than 1 hour.
-      if ('fetch' in window) {
-        fetch('/api/cleanup', { method: 'POST' }).catch(() => {
-          // Silently ignore failures; cleanup is best-effort.
-        });
-      }
-    </script>
     <script type="module" src="/app/main.tsx"></script>
   </body>
 </html>
