@@ -10,3 +10,6 @@
 .env.local
 .vercel
 .env*
+
+# Vite build output
+/dist/
