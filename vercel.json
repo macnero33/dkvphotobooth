@@ -1,7 +1,6 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": null,
   "rewrites": [
     { "source": "/((?!api/|assets/|favicon.ico).*)", "destination": "/index.html" }
   ],
