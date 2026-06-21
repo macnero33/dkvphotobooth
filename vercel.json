@@ -1,10 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 60
-    }
-  },
   "rewrites": [
     { "source": "/((?!api/|assets/|favicon.ico).*)", "destination": "/index.html" }
   ],
