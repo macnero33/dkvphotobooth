@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/((?!api/|assets/|favicon.ico).*)", "destination": "/index.html" }
+    { "source": "/photo/:id", "destination": "/index.html" },
+    { "source": "/measure-frames", "destination": "/index.html" }
   ]
 }
