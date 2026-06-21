@@ -11,12 +11,19 @@ export default async function handler(request) {
       return new Response('Method Not Allowed', { status: 405 });
     }
 
+    // Debug: log all available env var names (NOT values!)
+    const availableEnvKeys = Object.keys(process.env).filter(k =>
+      k.includes('SUPA') || k.includes('STOR') || k.includes('BASE')
+    );
+
     if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
       return new Response(
         JSON.stringify({
           error: 'Supabase credentials missing.',
           hasUrl: !!SUPABASE_URL,
           hasKey: !!SERVICE_ROLE_KEY,
+          availableEnvKeys,
+          allEnvKeysCount: Object.keys(process.env).length,
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
@@ -79,6 +86,7 @@ export default async function handler(request) {
     return new Response(
       JSON.stringify({
         error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack?.split('\n').slice(0, 5).join('\n') : null,
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
