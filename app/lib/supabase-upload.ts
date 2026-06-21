@@ -34,10 +34,8 @@ export async function uploadToSupabase(
     throw new Error('Failed to get public URL for uploaded photo strip.');
   }
 
-  // Cleanup expired files in the background.
-  void fetch('/api/cleanup', { method: 'POST' }).catch(() => {
-    // Ignore cleanup failures for the user flow.
-  });
+  // Note: cleanup of expired photo strips (>1 hour old) is now handled
+  // automatically by a Vercel cron job that hits /api/cleanup every 15 min.
 
   return {
     url: publicUrlData.data.publicUrl,
