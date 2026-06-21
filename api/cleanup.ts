@@ -2,9 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 
 // Vercel Serverless Function: triggered by cron once per day
 // Deletes photo strips older than 1 hour from Supabase Storage.
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const STORAGE_BUCKET = process.env.VITE_STORAGE_BUCKET || 'photo-strips';
+const SUPABASE_URL =
+  process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY;
+const STORAGE_BUCKET =
+  process.env.STORAGE_BUCKET || process.env.VITE_STORAGE_BUCKET || 'photo-strips';
 const EXPIRY_MS = 1000 * 60 * 60; // 1 hour
 
 export default async function handler(request: Request): Promise<Response> {
@@ -17,7 +21,7 @@ export default async function handler(request: Request): Promise<Response> {
       return new Response(
         JSON.stringify({
           error:
-            'Supabase credentials missing. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
+            'Supabase credentials missing. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
           hasUrl: !!SUPABASE_URL,
           hasKey: !!SERVICE_ROLE_KEY,
         }),
@@ -29,7 +33,6 @@ export default async function handler(request: Request): Promise<Response> {
       auth: { persistSession: false },
     });
 
-    // List all objects in the bucket.
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKET)
       .list('', { limit: 100, sortBy: { column: 'name', order: 'asc' } });
@@ -41,7 +44,6 @@ export default async function handler(request: Request): Promise<Response> {
       });
     }
 
-    // Filter files older than EXPIRY_MS based on the timestamp in the filename.
     const now = Date.now();
     const expiredFiles = (data ?? [])
       .map((file: any) => file.name)
