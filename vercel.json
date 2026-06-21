@@ -1,6 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/photo/:id", "destination": "/index.html" },
-    { "source": "/measure-frames", "destination": "/index.html" }
-  ]
-}
