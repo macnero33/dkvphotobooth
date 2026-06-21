@@ -41,8 +41,5 @@
     "vite": "5.4.21",
     "vite-tsconfig-paths": "4.3.2"
   },
-  "packageManager": "npm@10",
-  "engines": {
-    "node": "20.x"
-  }
+  "packageManager": "npm@10"
 }
