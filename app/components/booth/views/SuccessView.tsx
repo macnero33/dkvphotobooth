@@ -20,6 +20,7 @@ export function SuccessView({
   const [imageOrientation, setImageOrientation] = useState<
     'vertical' | 'horizontal'
   >('vertical');
+  const [copyStatus, setCopyStatus] = useState('Copy link');
 
   useEffect(() => {
     const img = new Image();
@@ -31,11 +32,30 @@ export function SuccessView({
     img.src = uploadUrl;
   }, [uploadUrl]);
 
-  // Construct the retrieval URL using base URL from env, or current origin if not configured
-  const baseUrl =
-    import.meta.env.VITE_BASE_URL ||
-    (typeof window !== 'undefined' ? window.location.origin : '');
-  const retrievalUrl = `${baseUrl}/photo/${encodeURIComponent(publicId)}`;
+  const retrievalUrl = uploadUrl;
+
+  const handleDownload = () => {
+    const a = document.createElement('a');
+    a.href = uploadUrl;
+    a.download = publicId;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const isInternalPhotoRoute = retrievalUrl.includes('/photo/');
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(retrievalUrl);
+      setCopyStatus('Link copied!');
+      window.setTimeout(() => setCopyStatus('Copy link'), 2000);
+    } catch (error) {
+      setCopyStatus('Copy failed');
+      window.setTimeout(() => setCopyStatus('Copy link'), 2000);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-500 to-blue-600 text-white p-8">
@@ -93,6 +113,23 @@ export function SuccessView({
                 )}
               />
             </div>
+            <div className="mt-4 flex gap-3 flex-wrap justify-center">
+              <Button
+                onClick={handleDownload}
+                size="lg"
+                className="text-lg px-6 py-4 bg-white text-green-700 hover:bg-green-50 rounded-full"
+              >
+                Download Strip
+              </Button>
+              <Button
+                onClick={handleCopyLink}
+                size="lg"
+                variant="outline"
+                className="text-lg px-6 py-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white rounded-full"
+              >
+                {copyStatus}
+              </Button>
+            </div>
           </div>
 
           {/* QR Code with Instructions and Button */}
@@ -113,6 +150,19 @@ export function SuccessView({
                 includeMargin={true}
               />
             </div>
+            <div className="mt-4 text-sm text-green-100 break-all text-center max-w-xs">
+              {retrievalUrl}
+            </div>
+            {isInternalPhotoRoute ? (
+              <div className="mt-4 text-sm text-yellow-200 bg-black/20 p-3 rounded-lg border border-yellow-300">
+                Warning: this link looks like an internal app route. It should be a
+                direct Supabase URL for reliable download.
+              </div>
+            ) : (
+              <div className="mt-4 text-sm text-green-200 bg-black/20 p-3 rounded-lg border border-green-300">
+                Good: this is a direct download URL from Supabase.
+              </div>
+            )}
 
             {/* Instructions below QR code */}
             <div className="mt-6 space-y-2 text-lg text-green-100">

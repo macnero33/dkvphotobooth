@@ -5,6 +5,26 @@ export interface SupabaseUploadResult {
   publicId: string;
 }
 
+const UPLOAD_TIMEOUT_MS = 30000;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      reject(new Error(`Upload timed out after ${timeoutMs / 1000} seconds.`));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+  });
+}
+
 export async function uploadToSupabase(
   blob: Blob
 ): Promise<SupabaseUploadResult> {
@@ -12,33 +32,37 @@ export async function uploadToSupabase(
   const fileName = `strip_${timestamp}.jpg`;
   const filePath = fileName;
 
-  const { data, error: uploadError } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .upload(filePath, blob, {
-      contentType: 'image/jpeg',
-      cacheControl: '3600',
-      upsert: false,
-    });
+  const uploadPromise = (async () => {
+    const { data, error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(filePath, blob, {
+        contentType: 'image/jpeg',
+        cacheControl: '3600',
+        upsert: false,
+      });
 
-  if (uploadError || !data) {
-    throw new Error(
-      uploadError?.message || 'Failed to upload photo strip to Supabase Storage.'
-    );
-  }
+    if (uploadError || !data) {
+      throw new Error(
+        uploadError?.message || 'Failed to upload photo strip to Supabase Storage.'
+      );
+    }
 
-  const publicUrlData = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .getPublicUrl(filePath);
+    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(filePath, 24 * 60 * 60);
 
-  if (!publicUrlData?.data?.publicUrl) {
-    throw new Error('Failed to get public URL for uploaded photo strip.');
-  }
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      throw new Error(
+        signedUrlError?.message ||
+          'Failed to create a signed URL for uploaded photo strip.'
+      );
+    }
 
-  // Note: cleanup of expired photo strips (>1 hour old) is now handled
-  // automatically by a Vercel cron job that hits /api/cleanup every 15 min.
+    return {
+      url: signedUrlData.signedUrl,
+      publicId: fileName,
+    };
+  })();
 
-  return {
-    url: publicUrlData.data.publicUrl,
-    publicId: fileName,
-  };
+  return withTimeout(uploadPromise, UPLOAD_TIMEOUT_MS);
 }

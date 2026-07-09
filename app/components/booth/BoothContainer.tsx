@@ -157,52 +157,45 @@ export function BoothContainer() {
 
   return (
     <div className="w-full h-full relative">
-      {match(state.value)
-        .with('idle', () => (
-          <IdleView
-            onStart={() => send({ type: 'START' })}
-            onSelectFrame={(frameId) => send({ type: 'SELECT_FRAME', frameId })}
-            selectedFrameId={state.context.selectedFrameId}
-          />
-        ))
-        .with('countdown', () => (
-          <CountdownView
-            countdown={state.context.countdown}
-            webcamRef={webcamRef}
-            currentPhotoNumber={state.context.currentImageIndex + 1}
-            onWebcamReady={handleWebcamReady}
-          />
-        ))
-        .with('capture', () => (
-          <CaptureView
-            webcamRef={webcamRef}
-            onWebcamReady={handleWebcamReady}
-          />
-        ))
-        .with('checkProgress', () => (
-          <ProcessingView message="Processing..." />
-        ))
-        .with('stitching', () => (
-          <ProcessingView message="Creating your photo strip..." />
-        ))
-        .with('uploading', () => (
-          <ProcessingView message="Uploading your photos..." />
-        ))
-        .with('success', () => (
-          <SuccessView
-            uploadUrl={state.context.uploadUrl!}
-            publicId={state.context.publicId!}
-            images={state.context.images}
-            onReset={() => send({ type: 'RESET' })}
-          />
-        ))
-        .with('failure', () => (
-          <FailureView
-            error={state.context.error || 'An unknown error occurred'}
-            onRetry={() => send({ type: 'RETRY' })}
-          />
-        ))
-        .otherwise(() => <div>Loading...</div>)}
+      {state.matches('idle') ? (
+        <IdleView
+          onStart={() => send({ type: 'START' })}
+          onSelectFrame={(frameId) => send({ type: 'SELECT_FRAME', frameId })}
+          selectedFrameId={state.context.selectedFrameId}
+        />
+      ) : state.matches('countdown') ? (
+        <CountdownView
+          countdown={state.context.countdown}
+          webcamRef={webcamRef}
+          currentPhotoNumber={state.context.currentImageIndex + 1}
+          onWebcamReady={handleWebcamReady}
+        />
+      ) : state.matches('capture') ? (
+        <CaptureView
+          webcamRef={webcamRef}
+          onWebcamReady={handleWebcamReady}
+        />
+      ) : state.matches('checkProgress') ? (
+        <ProcessingView message="Processing..." />
+      ) : state.matches('stitching') ? (
+        <ProcessingView message="Creating your photo strip..." />
+      ) : state.matches('uploading') ? (
+        <ProcessingView message="Uploading your photos..." />
+      ) : state.matches('success') ? (
+        <SuccessView
+          uploadUrl={state.context.uploadUrl!}
+          publicId={state.context.publicId!}
+          images={state.context.images}
+          onReset={() => send({ type: 'RESET' })}
+        />
+      ) : state.matches('failure') ? (
+        <FailureView
+          error={state.context.error || 'An unknown error occurred'}
+          onRetry={() => send({ type: 'RETRY' })}
+        />
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 }

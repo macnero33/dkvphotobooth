@@ -171,6 +171,17 @@ export const boothMachine = createMachine(
       },
 
       uploading: {
+        entry: assign({
+          error: null,
+        }),
+        after: {
+          30000: {
+            target: 'failure',
+            actions: assign({
+              error: () => 'Upload timed out after 30 seconds.',
+            }),
+          },
+        },
         invoke: {
           id: 'uploadService',
           src: 'uploadToSupabase', // Will be provided at runtime
@@ -191,15 +202,23 @@ export const boothMachine = createMachine(
               target: 'uploading',
               actions: assign({
                 uploadRetries: ({ context }) => context.uploadRetries + 1,
+                error: ({ event }) => {
+                  const uploadError = (event as any).data ?? (event as any).error;
+                  return uploadError instanceof Error
+                    ? uploadError.message
+                    : String(uploadError ?? 'Upload retry error');
+                },
               }),
             },
             {
               target: 'failure',
               actions: assign({
-                error: ({ event }) =>
-                  event.error instanceof Error
-                    ? event.error.message
-                    : 'Upload failed after multiple retries',
+                error: ({ event }) => {
+                  const uploadError = (event as any).data ?? (event as any).error;
+                  return uploadError instanceof Error
+                    ? uploadError.message
+                    : 'Upload failed after multiple retries';
+                },
               }),
             },
           ],
