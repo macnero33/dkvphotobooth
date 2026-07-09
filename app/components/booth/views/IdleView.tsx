@@ -7,6 +7,10 @@ interface IdleViewProps {
   onStart: () => void;
   onSelectFrame: (frameId: string) => void;
   selectedFrameId: string;
+  cameraDevices: MediaDeviceInfo[];
+  selectedCameraId: string | null;
+  onSelectCamera: (deviceId: string) => void;
+  onDevicesFound: (devices: MediaDeviceInfo[]) => void;
 }
 
 type CameraStatus = 'checking' | 'granted' | 'denied' | 'error';
@@ -46,6 +50,10 @@ export function IdleView({
   onStart,
   onSelectFrame,
   selectedFrameId,
+  cameraDevices,
+  selectedCameraId,
+  onSelectCamera,
+  onDevicesFound,
 }: IdleViewProps) {
   const [cameraStatus, setCameraStatus] =
     useState<CameraStatus>('checking');
@@ -71,12 +79,18 @@ export function IdleView({
   };
 
   useEffect(() => {
-    // Request camera permission on mount
+    // Request camera permission on mount and enumerate available devices
     const requestCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: true,
         });
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter(
+          (device) => device.kind === 'videoinput',
+        );
+        onDevicesFound(videoInputs);
 
         // Permission granted - stop the stream immediately
         stream.getTracks().forEach((track) => track.stop());
@@ -99,7 +113,7 @@ export function IdleView({
     };
 
     requestCamera();
-  }, []);
+  }, [onDevicesFound]);
 
   const handleRetryPermission = async () => {
     setCameraStatus('checking');
@@ -158,6 +172,24 @@ export function IdleView({
               >
                 Retry
               </Button>
+            </div>
+          )}
+          {cameraStatus === 'granted' && cameraDevices.length > 0 && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-white mb-2">
+                Choose camera
+              </label>
+              <select
+                value={selectedCameraId ?? ''}
+                onChange={(event) => onSelectCamera(event.target.value)}
+                className="w-full rounded-lg border border-white/50 bg-white/10 px-3 py-2 text-white"
+              >
+                {cameraDevices.map((device) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label || `Camera ${device.deviceId}`}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
         </div>

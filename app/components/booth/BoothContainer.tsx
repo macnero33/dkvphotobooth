@@ -1,8 +1,7 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useMachine } from '@xstate/react';
 import Webcam from 'react-webcam';
 import { fromPromise } from 'xstate';
-import { match } from 'ts-pattern';
 import { boothMachine } from '../../machines/boothMachine';
 import { stitchPhotos } from '../../lib/canvas-stitcher';
 import { uploadToSupabase } from '../../lib/supabase-upload';
@@ -20,7 +19,59 @@ export function BoothContainer() {
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
   const shutterAudioRef = useRef<HTMLAudioElement | null>(null);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const videoReadyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const webcamReadyRef = useRef(false);
+  const videoReadyRef = useRef(false);
+  const [videoStatus, setVideoStatus] = useState<'waiting' | 'ready' | 'error'>('waiting');
+  const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string | null>(null);
+
+  const isVideoReady = useCallback(() => {
+    const current = webcamRef.current;
+    if (!current || !current.video) {
+      return false;
+    }
+
+    const video = current.video;
+    return Boolean(
+      video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+        video.videoWidth &&
+        video.videoHeight,
+    );
+  }, []);
+
+  const scheduleVideoReadyCheck = useCallback(() => {
+    if (videoReadyTimeoutRef.current) {
+      clearTimeout(videoReadyTimeoutRef.current);
+    }
+
+    const current = webcamRef.current;
+    if (!current || !current.video) {
+      setVideoStatus('waiting');
+      videoReadyTimeoutRef.current = setTimeout(scheduleVideoReadyCheck, 200);
+      return;
+    }
+
+    if (isVideoReady()) {
+      videoReadyRef.current = true;
+      setVideoStatus('ready');
+      return;
+    }
+
+    setVideoStatus('waiting');
+    videoReadyTimeoutRef.current = setTimeout(scheduleVideoReadyCheck, 200);
+  }, [isVideoReady]);
+
+  const handleWebcamReady = useCallback(() => {
+    webcamReadyRef.current = true;
+    setVideoStatus('waiting');
+    scheduleVideoReadyCheck();
+  }, [scheduleVideoReadyCheck]);
+
+  const handleAvailableCameras = useCallback((devices: MediaDeviceInfo[]) => {
+    setCameraDevices(devices);
+    setSelectedCameraId((current) => current ?? devices[0]?.deviceId ?? null);
+  }, []);
 
   // Initialize state machine with service implementations
   const [state, send] = useMachine(
@@ -41,10 +92,22 @@ export function BoothContainer() {
     })
   );
 
-  // Handle webcam ready
-  const handleWebcamReady = useCallback(() => {
-    webcamReadyRef.current = true;
-  }, []);
+  const handleWebcamError = useCallback((error: string | DOMException) => {
+    console.error('Webcam error:', error);
+    webcamReadyRef.current = false;
+    videoReadyRef.current = false;
+    setVideoStatus('error');
+
+    if (state.matches('capture')) {
+      send({
+        type: 'CAPTURE_ERROR',
+        error:
+          typeof error === 'string'
+            ? error
+            : error.message || 'Camera initialization failed.',
+      });
+    }
+  }, [send, state]);
 
   // Initialize audio on mount
   useEffect(() => {
@@ -100,60 +163,38 @@ export function BoothContainer() {
     }
   }, [state.value, send]);
 
-  // Capture photo callback
-  const capturePhoto = useCallback(() => {
-    try {
-      if (!webcamRef.current) {
-        throw new Error('Webcam ref is null');
-      }
-
-      const screenshot = webcamRef.current.getScreenshot();
-
-      if (!screenshot) {
-        throw new Error('Screenshot returned null - check camera permissions');
-      }
-
-      return screenshot;
-    } catch (error) {
-      throw error;
-    }
-  }, []);
-
   // Handle capture with retry logic
   useEffect(() => {
-    if (state.matches('capture')) {
-      // Play shutter sound
-      shutterAudioRef.current?.play().catch(() => {});
-
-      let attempts = 0;
-      const maxAttempts = 5;
-
-      // Retry capture if needed (video might not be ready immediately)
-      const attemptCapture = () => {
-        attempts++;
-
-        try {
-          const screenshot = capturePhoto();
-          send({ type: 'CAPTURE_DONE', image: screenshot });
-        } catch (error) {
-          if (attempts < maxAttempts) {
-            setTimeout(attemptCapture, 100);
-          } else {
-            send({
-              type: 'CAPTURE_ERROR',
-              error: error instanceof Error ? error.message : 'Failed to capture photo'
-            });
-          }
-        }
-      };
-
-      // Wait longer for webcam to be fully ready after state transition
-      // The webcam remounts when transitioning from countdown to capture
-      const timer = setTimeout(attemptCapture, 600);
-
-      return () => clearTimeout(timer);
+    if (!state.matches('capture')) {
+      return;
     }
-  }, [state.value, send, capturePhoto]);
+
+    // Play shutter sound when capture begins
+    shutterAudioRef.current?.play().catch(() => {});
+
+    let attempts = 0;
+    const maxAttempts = 40;
+    const interval = setInterval(() => {
+      attempts++;
+
+      const screenshot = webcamRef.current?.getScreenshot();
+      if (screenshot) {
+        send({ type: 'CAPTURE_DONE', image: screenshot });
+        clearInterval(interval);
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        send({
+          type: 'CAPTURE_ERROR',
+          error: 'Failed to capture photo. Please try again.',
+        });
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [state.value, send]);
 
   return (
     <div className="w-full h-full relative">
@@ -162,18 +203,26 @@ export function BoothContainer() {
           onStart={() => send({ type: 'START' })}
           onSelectFrame={(frameId) => send({ type: 'SELECT_FRAME', frameId })}
           selectedFrameId={state.context.selectedFrameId}
+          cameraDevices={cameraDevices}
+          selectedCameraId={selectedCameraId}
+          onSelectCamera={setSelectedCameraId}
+          onDevicesFound={handleAvailableCameras}
         />
       ) : state.matches('countdown') ? (
         <CountdownView
           countdown={state.context.countdown}
           webcamRef={webcamRef}
           currentPhotoNumber={state.context.currentImageIndex + 1}
+          selectedCameraId={selectedCameraId}
           onWebcamReady={handleWebcamReady}
+          onWebcamError={handleWebcamError}
         />
       ) : state.matches('capture') ? (
         <CaptureView
           webcamRef={webcamRef}
+          selectedCameraId={selectedCameraId}
           onWebcamReady={handleWebcamReady}
+          onWebcamError={handleWebcamError}
         />
       ) : state.matches('checkProgress') ? (
         <ProcessingView message="Processing..." />

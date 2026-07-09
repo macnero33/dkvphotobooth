@@ -5,10 +5,29 @@ interface CountdownViewProps {
   countdown: number;
   webcamRef: RefObject<Webcam | null>;
   currentPhotoNumber: number; // 1, 2, or 3
+  selectedCameraId?: string | null;
   onWebcamReady?: () => void;
+  onWebcamError?: (error: string | DOMException) => void;
 }
 
-export function CountdownView({ countdown, webcamRef, currentPhotoNumber, onWebcamReady }: CountdownViewProps) {
+const defaultVideoConstraints = {
+  width: { ideal: 1280 },
+  height: { ideal: 720 },
+  facingMode: 'user',
+};
+
+export function CountdownView({
+  countdown,
+  webcamRef,
+  currentPhotoNumber,
+  selectedCameraId,
+  onWebcamReady,
+  onWebcamError,
+}: CountdownViewProps) {
+  const videoConstraints = selectedCameraId
+    ? { deviceId: { exact: selectedCameraId } }
+    : defaultVideoConstraints;
+
   return (
     <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
       {/* Webcam preview (mirrored) */}
@@ -18,13 +37,10 @@ export function CountdownView({ countdown, webcamRef, currentPhotoNumber, onWebc
           audio={false}
           screenshotFormat="image/jpeg"
           screenshotQuality={0.92}
-          videoConstraints={{
-            width: 1920,
-            height: 1080,
-            facingMode: 'user',
-          }}
+          videoConstraints={videoConstraints}
           mirrored={true}
           onUserMedia={onWebcamReady}
+          onUserMediaError={onWebcamError}
           className="w-full h-full object-cover"
         />
       </div>

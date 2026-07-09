@@ -3,10 +3,27 @@ import type { RefObject } from 'react';
 
 interface CaptureViewProps {
   webcamRef: RefObject<Webcam | null>;
+  selectedCameraId?: string | null;
   onWebcamReady?: () => void;
+  onWebcamError?: (error: string | DOMException) => void;
 }
 
-export function CaptureView({ webcamRef, onWebcamReady }: CaptureViewProps) {
+const defaultVideoConstraints = {
+  width: { ideal: 1280 },
+  height: { ideal: 720 },
+  facingMode: 'user',
+};
+
+export function CaptureView({
+  webcamRef,
+  selectedCameraId,
+  onWebcamReady,
+  onWebcamError,
+}: CaptureViewProps) {
+  const videoConstraints = selectedCameraId
+    ? { deviceId: { exact: selectedCameraId } }
+    : defaultVideoConstraints;
+
   return (
     <div className="relative w-full h-screen bg-black flex items-center justify-center overflow-hidden">
       {/* Webcam preview (mirrored) */}
@@ -15,13 +32,10 @@ export function CaptureView({ webcamRef, onWebcamReady }: CaptureViewProps) {
         audio={false}
         screenshotFormat="image/jpeg"
         screenshotQuality={0.92}
-        videoConstraints={{
-          width: 1920,
-          height: 1080,
-          facingMode: 'user',
-        }}
+        videoConstraints={videoConstraints}
         mirrored={true}
         onUserMedia={onWebcamReady}
+        onUserMediaError={onWebcamError}
         className="w-full h-full object-cover"
       />
 
