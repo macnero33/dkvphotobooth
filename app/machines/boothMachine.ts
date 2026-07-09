@@ -143,8 +143,8 @@ export const boothMachine = createMachine(
             target: 'checkProgress',
           },
           REVIEW_RETAKE: {
-            actions: assign({ tempImage: () => null }),
-            target: 'capture',
+            actions: assign({ tempImage: () => null, countdown: () => 3 }),
+            target: 'countdown',
           },
         },
       },
