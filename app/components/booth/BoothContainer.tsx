@@ -14,6 +14,7 @@ import { ProcessingView } from './views/ProcessingView';
 import { SuccessView } from './views/SuccessView';
 import { FailureView } from './views/FailureView';
 import { ReviewView } from './views/ReviewView';
+import { Toast } from '../ui/Toast';
 
 export function BoothContainer() {
   const webcamRef = useRef<Webcam | null>(null);
@@ -26,6 +27,7 @@ export function BoothContainer() {
   const [videoStatus, setVideoStatus] = useState<'waiting' | 'ready' | 'error'>('waiting');
   const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedCameraId, setSelectedCameraId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const isVideoReady = useCallback(() => {
     const current = webcamRef.current;
@@ -230,8 +232,16 @@ export function BoothContainer() {
       ) : state.matches('review') ? (
         <ReviewView
           image={state.context.tempImage!}
-          onAccept={() => send({ type: 'REVIEW_ACCEPT' })}
-          onRetake={() => send({ type: 'REVIEW_RETAKE' })}
+          onAccept={() => {
+            send({ type: 'REVIEW_ACCEPT' });
+            setToastMessage('Photo saved');
+            setTimeout(() => setToastMessage(null), 2000);
+          }}
+          onRetake={() => {
+            send({ type: 'REVIEW_RETAKE' });
+            setToastMessage('Retake started');
+            setTimeout(() => setToastMessage(null), 1500);
+          }}
         />
       ) : state.matches('stitching') ? (
         <ProcessingView message="Creating your photo strip..." />
@@ -252,6 +262,7 @@ export function BoothContainer() {
       ) : (
         <div>Loading...</div>
       )}
+      <Toast message={toastMessage} />
     </div>
   );
 }
