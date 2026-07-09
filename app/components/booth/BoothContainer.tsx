@@ -13,6 +13,7 @@ import { CaptureView } from './views/CaptureView';
 import { ProcessingView } from './views/ProcessingView';
 import { SuccessView } from './views/SuccessView';
 import { FailureView } from './views/FailureView';
+import { ReviewView } from './views/ReviewView';
 
 export function BoothContainer() {
   const webcamRef = useRef<Webcam | null>(null);
@@ -226,6 +227,12 @@ export function BoothContainer() {
         />
       ) : state.matches('checkProgress') ? (
         <ProcessingView message="Processing..." />
+      ) : state.matches('review') ? (
+        <ReviewView
+          image={state.context.tempImage!}
+          onAccept={() => send({ type: 'REVIEW_ACCEPT' })}
+          onRetake={() => send({ type: 'REVIEW_RETAKE' })}
+        />
       ) : state.matches('stitching') ? (
         <ProcessingView message="Creating your photo strip..." />
       ) : state.matches('uploading') ? (

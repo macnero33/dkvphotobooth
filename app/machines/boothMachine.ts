@@ -5,6 +5,7 @@ export interface BoothContext {
   images: string[]; // base64 data URLs
   currentImageIndex: number; // 0-2 for progress tracking
   finalStripBlob: Blob | null; // local stitched image
+  tempImage: string | null; // temporary captured image awaiting review
   uploadUrl: string | null; // Supabase public URL
   publicId: string | null; // Storage filename / QR identifier
   error: string | null;
@@ -19,6 +20,8 @@ export type BoothEvent =
   | { type: 'COUNTDOWN_DONE' }
   | { type: 'CAPTURE_DONE'; image: string }
   | { type: 'CAPTURE_ERROR'; error: string }
+  | { type: 'REVIEW_ACCEPT' }
+  | { type: 'REVIEW_RETAKE' }
   | { type: 'STITCH_DONE'; blob: Blob }
   | { type: 'STITCH_ERROR'; error: string }
   | { type: 'UPLOAD_DONE'; url: string; publicId: string }
@@ -53,6 +56,7 @@ export const boothMachine = createMachine(
       images: [],
       currentImageIndex: 0,
       finalStripBlob: null,
+      tempImage: null,
       uploadUrl: null,
       publicId: null,
       error: null,
@@ -111,16 +115,36 @@ export const boothMachine = createMachine(
         on: {
           CAPTURE_DONE: {
             actions: assign({
-              images: ({ context, event }) => [...context.images, event.image],
-              currentImageIndex: ({ context }) => context.currentImageIndex + 1,
+              tempImage: ({ event }) => (event as any).image as string,
             }),
-            target: 'checkProgress',
+            target: 'review',
           },
           CAPTURE_ERROR: {
             actions: assign({
               error: ({ event }) => event.error,
             }),
             target: 'failure',
+          },
+        },
+      },
+
+      review: {
+        // Let user accept the photo (commit) or retake (go back to capture)
+        on: {
+          REVIEW_ACCEPT: {
+            actions: assign({
+              images: ({ context }) => [
+                ...context.images,
+                context.tempImage as string,
+              ],
+              tempImage: () => null,
+              currentImageIndex: ({ context }) => context.currentImageIndex + 1,
+            }),
+            target: 'checkProgress',
+          },
+          REVIEW_RETAKE: {
+            actions: assign({ tempImage: () => null }),
+            target: 'capture',
           },
         },
       },
