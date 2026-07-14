@@ -13,3 +13,5 @@
 
 # Vite build output
 /dist/
+
+.vscode/
