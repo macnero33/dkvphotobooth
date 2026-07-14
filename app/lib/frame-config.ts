@@ -53,8 +53,8 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     height: 1772,
     orientation: 'vertical',
     photoSlots: [
-      { x: 25, y: 20, width: 464, height: 343 },
-    ],
+  { x: 105, y: 238, width: 973, height: 859 }, // Slot 1
+],
   },
   'bright-bold-vertical': {
     id: 'bright-bold-vertical',
