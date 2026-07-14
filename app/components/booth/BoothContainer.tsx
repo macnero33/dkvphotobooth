@@ -7,6 +7,7 @@ import { stitchPhotos } from '../../lib/canvas-stitcher';
 import { uploadToSupabase } from '../../lib/supabase-upload';
 import { generateBeepSound, generateShutterSound } from '../../lib/audio-utils';
 import type { FrameConfig } from '../../lib/frame-config';
+import { getFrameById } from '../../lib/frame-config';
 import { IdleView } from './views/IdleView';
 import { CountdownView } from './views/CountdownView';
 import { CaptureView } from './views/CaptureView';
@@ -216,6 +217,7 @@ export function BoothContainer() {
           countdown={state.context.countdown}
           webcamRef={webcamRef}
           currentPhotoNumber={state.context.currentImageIndex + 1}
+          photoCount={state.context.photoCount}
           selectedCameraId={selectedCameraId}
           onWebcamReady={handleWebcamReady}
           onWebcamError={handleWebcamError}

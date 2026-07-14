@@ -4,7 +4,8 @@ import type { RefObject } from 'react';
 interface CountdownViewProps {
   countdown: number;
   webcamRef: RefObject<Webcam | null>;
-  currentPhotoNumber: number; // 1, 2, or 3
+  currentPhotoNumber: number;
+  photoCount: number;
   selectedCameraId?: string | null;
   onWebcamReady?: () => void;
   onWebcamError?: (error: string | DOMException) => void;
@@ -20,6 +21,7 @@ export function CountdownView({
   countdown,
   webcamRef,
   currentPhotoNumber,
+  photoCount,
   selectedCameraId,
   onWebcamReady,
   onWebcamError,
@@ -52,7 +54,7 @@ export function CountdownView({
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-20">
         <div className="bg-white bg-opacity-90 px-6 py-3 rounded-full">
           <p className="text-xl font-semibold text-gray-800">
-            Photo {currentPhotoNumber} of 3
+            Photo {currentPhotoNumber} of {photoCount}
           </p>
         </div>
       </div>

@@ -66,6 +66,14 @@ export function IdleView({
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  useEffect(() => {
+    dispatch({ type: 'SELECT', id: selectedFrameId });
+  }, [selectedFrameId]);
+
+  const selectedFrame = getAllFrames().find(
+    (frame) => frame.id === selectorState.selectedId,
+  );
+
   // Filter frames based on orientation
   const frames = getAllFrames().filter(
     (frame) =>
@@ -293,7 +301,9 @@ export function IdleView({
         </div>
 
         <div className="mt-16 text-blue-100 space-y-2">
-          <p className="text-lg">✓ Takes 3 photos with countdown</p>
+          <p className="text-lg">
+            ✓ Takes {selectedFrame?.photoSlots.length ?? 3} photo{selectedFrame?.photoSlots.length === 1 ? '' : 's'} with countdown
+          </p>
           <p className="text-lg">✓ Creates instant photo strip</p>
           <p className="text-lg">✓ Download via QR code</p>
         </div>

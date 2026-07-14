@@ -66,8 +66,9 @@ export async function stitchPhotos(
   images: string[],
   frameConfig: FrameConfig
 ): Promise<Blob> {
-  if (images.length !== 3) {
-    throw new Error(`Expected 3 images, got ${images.length}`);
+  const requiredPhotos = frameConfig.photoSlots.length;
+  if (images.length !== requiredPhotos) {
+    throw new Error(`Expected ${requiredPhotos} images, got ${images.length}`);
   }
 
   // Create canvas with frame dimensions
@@ -95,7 +96,7 @@ export async function stitchPhotos(
     // Photos will completely override/cover the frame at slot areas
     ctx.globalCompositeOperation = 'source-over';
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < frameConfig.photoSlots.length; i++) {
       const photo = photoImages[i];
       const slot = frameConfig.photoSlots[i];
 

@@ -3,7 +3,7 @@ import { getDefaultFrame, getFrameById, type FrameConfig } from '../lib/frame-co
 
 export interface BoothContext {
   images: string[]; // base64 data URLs
-  currentImageIndex: number; // 0-2 for progress tracking
+  currentImageIndex: number; // 0-based progress tracker
   finalStripBlob: Blob | null; // local stitched image
   tempImage: string | null; // temporary captured image awaiting review
   uploadUrl: string | null; // Supabase public URL
@@ -12,6 +12,7 @@ export interface BoothContext {
   countdown: number; // 3, 2, 1 for UI display
   uploadRetries: number; // Track retry attempts
   selectedFrameId: string; // Selected frame config ID
+  photoCount: number; // Number of photos required by selected frame
 }
 
 export type BoothEvent =
@@ -63,6 +64,7 @@ export const boothMachine = createMachine(
       countdown: 3,
       uploadRetries: 0,
       selectedFrameId: getDefaultFrame().id,
+      photoCount: getDefaultFrame().photoSlots.length,
     },
     states: {
       idle: {
@@ -70,18 +72,36 @@ export const boothMachine = createMachine(
           images: [],
           currentImageIndex: 0,
           finalStripBlob: null,
+          tempImage: null,
           uploadUrl: null,
           publicId: null,
           error: null,
           countdown: 3,
           uploadRetries: 0,
           selectedFrameId: getDefaultFrame().id,
+          photoCount: getDefaultFrame().photoSlots.length,
         }),
         on: {
-          START: 'countdown',
+          START: {
+            target: 'countdown',
+            actions: assign({
+              images: [],
+              currentImageIndex: 0,
+              tempImage: null,
+              countdown: 3,
+              photoCount: ({ context }) => {
+                const frame = getFrameById(context.selectedFrameId);
+                return frame?.photoSlots.length ?? 1;
+              },
+            }),
+          },
           SELECT_FRAME: {
             actions: assign({
               selectedFrameId: ({ event }) => event.frameId,
+              photoCount: ({ event }) => {
+                const frame = getFrameById(event.frameId);
+                return frame?.photoSlots.length ?? 1;
+              },
             }),
           },
         },
@@ -152,11 +172,11 @@ export const boothMachine = createMachine(
       checkProgress: {
         always: [
           {
-            guard: ({ context }) => context.images.length < 3,
+            guard: ({ context }) => context.images.length < context.photoCount,
             target: 'countdown',
           },
           {
-            guard: ({ context }) => context.images.length === 3,
+            guard: ({ context }) => context.images.length === context.photoCount,
             target: 'stitching',
           },
         ],
