@@ -19,16 +19,11 @@ type CameraStatus = 'checking' | 'granted' | 'denied' | 'error';
 type SelectorState = {
   selectedId: string;
   hoveredId: string | null;
-  orientationFilter: 'all' | 'vertical' | 'horizontal';
 };
 
 type SelectorAction =
   | { type: 'SELECT'; id: string }
-  | { type: 'HOVER'; id: string | null }
-  | {
-      type: 'FILTER';
-      orientation: SelectorState['orientationFilter'];
-    };
+  | { type: 'HOVER'; id: string | null };
 
 function selectorReducer(
   state: SelectorState,
@@ -39,8 +34,6 @@ function selectorReducer(
       return { ...state, selectedId: action.id };
     case 'HOVER':
       return { ...state, hoveredId: action.id };
-    case 'FILTER':
-      return { ...state, orientationFilter: action.orientation };
     default:
       return state;
   }
@@ -61,7 +54,6 @@ export function IdleView({
   const [selectorState, dispatch] = useReducer(selectorReducer, {
     selectedId: selectedFrameId,
     hoveredId: null,
-    orientationFilter: 'all',
   });
 
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -74,12 +66,8 @@ export function IdleView({
     (frame) => frame.id === selectorState.selectedId,
   );
 
-  // Filter frames based on orientation
-  const frames = getAllFrames().filter(
-    (frame) =>
-      selectorState.orientationFilter === 'all' ||
-      frame.orientation === selectorState.orientationFilter,
-  );
+  // All frames (no orientation filter)
+  const frames = getAllFrames();
 
   const handleFrameSelect = (frameId: string) => {
     dispatch({ type: 'SELECT', id: frameId });
@@ -207,30 +195,6 @@ export function IdleView({
           <h2 className="text-3xl font-semibold">
             Choose Your Frame
           </h2>
-
-          {/* Orientation Filter */}
-          <div className="flex justify-center gap-2">
-            {(['all', 'vertical', 'horizontal'] as const).map(
-              (filter) => (
-                <Button
-                  key={filter}
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    dispatch({ type: 'FILTER', orientation: filter })
-                  }
-                  className={cn(
-                    'capitalize border-2 transition-all',
-                    selectorState.orientationFilter === filter
-                      ? 'bg-gray-800 text-white border-gray-800 hover:bg-gray-700'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400',
-                  )}
-                >
-                  {filter}
-                </Button>
-              ),
-            )}
-          </div>
 
           {/* Frame Grid */}
           <div className="grid grid-cols-4 gap-3 mt-6">
