@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 
 export function meta() {
   return [
-    { title: "Your Photo Strip | Snap & Go" },
+    { title: "Your Photo Strip | DKV Receipt" },
     { name: "description", content: "Download your photobooth photo strip" },
   ];
 }
@@ -110,7 +110,7 @@ export default function PhotoRetrieval() {
       <div className="max-w-4xl w-full space-y-6">
         <div className="text-center text-white space-y-2">
           <h1 className="text-4xl font-bold">Your Photo Strip</h1>
-          <p className="text-xl text-blue-200">Snap & Go Photobooth</p>
+          <p className="text-xl text-blue-200">DKV Receipt Photobooth</p>
         </div>
 
         <div className="bg-white p-4 rounded-2xl shadow-2xl min-h-[320px] flex items-center justify-center">
@@ -162,7 +162,7 @@ export default function PhotoRetrieval() {
         </div>
 
         <div className="text-center text-blue-300 text-xs pt-4">
-          <p>Powered by Snap & Go Photobooth</p>
+          <p>Powered by DKV Receipt Photobooth</p>
         </div>
       </div>
     </div>

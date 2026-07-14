@@ -147,7 +147,7 @@ export function IdleView({
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white p-8">
       <div className="text-center space-y-8">
         <h1 className="text-6xl font-bold animate-pulse">
-          Snap & Go
+          DKV Receipt
         </h1>
         <p className="text-2xl text-blue-100">
           Your instant photobooth experience
