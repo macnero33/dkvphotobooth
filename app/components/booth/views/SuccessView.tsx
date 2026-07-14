@@ -58,12 +58,12 @@ export function SuccessView({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-500 to-blue-600 text-white p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-8">
       <div className="text-center space-y-8 max-w-4xl">
         <div className="space-y-4">
-          <div className="text-6xl">✓</div>
-          <h2 className="text-5xl font-bold">All Done!</h2>
-          <p className="text-2xl text-green-100">
+          <div className="text-6xl text-green-500">✓</div>
+          <h2 className="text-5xl font-bold text-gray-800">All Done!</h2>
+          <p className="text-2xl text-gray-500">
             Your photo strip is ready
           </p>
         </div>
@@ -117,7 +117,7 @@ export function SuccessView({
               <Button
                 onClick={handleDownload}
                 size="lg"
-                className="text-lg px-6 py-4 bg-white text-green-700 hover:bg-green-50 rounded-full"
+                className="text-lg px-6 py-4 bg-gray-800 text-white hover:bg-gray-700 rounded-full"
               >
                 Download Strip
               </Button>
@@ -125,7 +125,7 @@ export function SuccessView({
                 onClick={handleCopyLink}
                 size="lg"
                 variant="outline"
-                className="text-lg px-6 py-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white rounded-full"
+                className="text-lg px-6 py-4 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
               >
                 {copyStatus}
               </Button>
@@ -150,22 +150,22 @@ export function SuccessView({
                 includeMargin={true}
               />
             </div>
-            <div className="mt-4 text-sm text-green-100 break-all text-center max-w-xs">
+            <div className="mt-4 text-sm text-gray-500 break-all text-center max-w-xs">
               {retrievalUrl}
             </div>
             {isInternalPhotoRoute ? (
-              <div className="mt-4 text-sm text-yellow-200 bg-black/20 p-3 rounded-lg border border-yellow-300">
+              <div className="mt-4 text-sm text-yellow-700 bg-yellow-50 p-3 rounded-lg border border-yellow-300">
                 Warning: this link looks like an internal app route. It should be a
                 direct Supabase URL for reliable download.
               </div>
             ) : (
-              <div className="mt-4 text-sm text-green-200 bg-black/20 p-3 rounded-lg border border-green-300">
+              <div className="mt-4 text-sm text-green-700 bg-green-50 p-3 rounded-lg border border-green-300">
                 Good: this is a direct download URL from Supabase.
               </div>
             )}
 
             {/* Instructions below QR code */}
-            <div className="mt-6 space-y-2 text-lg text-green-100">
+            <div className="mt-6 space-y-2 text-lg text-gray-600">
               <p>📱 Open your phone camera</p>
               <p>📸 Point at the QR code</p>
               <p>💾 Download your photo strip</p>
@@ -177,7 +177,7 @@ export function SuccessView({
                 onClick={onReset}
                 size="lg"
                 variant="outline"
-                className="text-xl px-8 py-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-2 border-white rounded-full"
+                className="text-xl px-8 py-6 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
               >
                 Start New Session
               </Button>
@@ -185,7 +185,7 @@ export function SuccessView({
           </div>
         </div>
 
-        <p className="text-sm text-green-200 opacity-75">
+        <p className="text-sm text-gray-400">
           This session will auto-reset in 60 seconds
         </p>
       </div>

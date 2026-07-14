@@ -144,31 +144,31 @@ export function IdleView({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-8">
       <div className="text-center space-y-8">
-        <h1 className="text-6xl font-bold animate-pulse">
+        <h1 className="text-6xl font-bold animate-pulse text-gray-900">
           DKV Receipt
         </h1>
-        <p className="text-2xl text-blue-100">
+        <p className="text-2xl text-gray-500">
           Your instant photobooth experience
         </p>
 
         {/* Camera status indicator */}
         <div className="mt-8">
           {cameraStatus === 'checking' && (
-            <div className="flex items-center justify-center gap-2 text-yellow-200">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <div className="flex items-center justify-center gap-2 text-yellow-600">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
               <span>Requesting camera access...</span>
             </div>
           )}
           {cameraStatus === 'granted' && (
-            <div className="text-green-200 flex items-center justify-center gap-2">
+            <div className="text-green-600 flex items-center justify-center gap-2">
               <span className="text-2xl">✓</span>
               <span>Camera ready</span>
             </div>
           )}
           {cameraStatus === 'denied' && (
-            <div className="text-red-200 space-y-2">
+            <div className="text-red-600 space-y-2">
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">✗</span>
                 <span>{errorMessage}</span>
@@ -176,7 +176,7 @@ export function IdleView({
               <Button
                 onClick={handleRetryPermission}
                 variant="outline"
-                className="text-white border-white hover:bg-white hover:text-purple-600"
+                className="border-gray-400 text-gray-700 hover:bg-gray-100"
               >
                 Retry
               </Button>
@@ -184,13 +184,13 @@ export function IdleView({
           )}
           {cameraStatus === 'granted' && cameraDevices.length > 0 && (
             <div className="mt-4">
-              <label className="block text-sm font-medium text-white mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Choose camera
               </label>
               <select
                 value={selectedCameraId ?? ''}
                 onChange={(event) => onSelectCamera(event.target.value)}
-                className="w-full rounded-lg border border-white/50 bg-white/10 px-3 py-2 text-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-800"
               >
                 {cameraDevices.map((device) => (
                   <option key={device.deviceId} value={device.deviceId}>
@@ -222,8 +222,8 @@ export function IdleView({
                   className={cn(
                     'capitalize border-2 transition-all',
                     selectorState.orientationFilter === filter
-                      ? 'bg-white text-purple-600 border-white hover:bg-white'
-                      : 'bg-transparent text-white border-white/50 hover:bg-white/20 hover:border-white',
+                      ? 'bg-gray-800 text-white border-gray-800 hover:bg-gray-700'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:border-gray-400',
                   )}
                 >
                   {filter}
@@ -246,14 +246,14 @@ export function IdleView({
                 }
                 className={cn(
                   'relative p-1.5 rounded-lg border-2 transition-all duration-200',
-                  'hover:scale-105 hover:shadow-xl',
+                  'hover:scale-105 hover:shadow-xl bg-white',
                   selectorState.selectedId === frame.id
-                    ? 'border-yellow-400 bg-white/20 shadow-2xl'
-                    : 'border-white/30 bg-white/10',
+                    ? 'border-yellow-400 shadow-2xl'
+                    : 'border-gray-200',
                 )}
               >
                 {/* Frame Preview */}
-                <div className="aspect-[3/4] bg-white rounded overflow-hidden">
+                <div className="aspect-[3/4] bg-gray-100 rounded overflow-hidden">
                   <img
                     src={frame.path}
                     alt={frame.name}
@@ -262,14 +262,14 @@ export function IdleView({
                 </div>
 
                 {/* Frame Name */}
-                <p className="mt-1 text-xs font-medium">
+                <p className="mt-1 text-xs font-medium text-gray-700">
                   {frame.name}
                 </p>
 
                 {/* Orientation Badge */}
                 <span
                   className={cn(
-                    'absolute top-2 right-2 px-1.5 py-0.5 text-[10px] rounded-full font-semibold',
+                    'absolute top-2 right-2 px-1.5 py-0.5 text-[10px] rounded-full font-semibold text-white',
                     frame.orientation === 'vertical'
                       ? 'bg-blue-500'
                       : 'bg-purple-500',
@@ -280,7 +280,7 @@ export function IdleView({
 
                 {/* Selected Indicator */}
                 {selectorState.selectedId === frame.id && (
-                  <div className="absolute top-1 left-1 text-lg bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center text-purple-600">
+                  <div className="absolute top-1 left-1 text-lg bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center text-gray-800">
                     ✓
                   </div>
                 )}
@@ -294,13 +294,13 @@ export function IdleView({
             onClick={onStart}
             disabled={cameraStatus !== 'granted'}
             size="lg"
-            className="text-2xl px-12 py-8 bg-white text-purple-600 hover:bg-blue-50 hover:scale-105 transition-all duration-300 rounded-full shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="text-2xl px-12 py-8 bg-gray-800 text-white hover:bg-gray-700 hover:scale-105 transition-all duration-300 rounded-full shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Start Photo Session
           </Button>
         </div>
 
-        <div className="mt-16 text-blue-100 space-y-2">
+        <div className="mt-16 text-gray-500 space-y-2">
           <p className="text-lg">
             ✓ Takes {selectedFrame?.photoSlots.length ?? 3} photo{selectedFrame?.photoSlots.length === 1 ? '' : 's'} with countdown
           </p>
