@@ -3,13 +3,19 @@
  *
  * Usage:
  * 1. Open browser console in dev environment
- * 2. Import and run: measureFrameSlots('/assets/frame-classic-vertical.png')
+ * 2. Import and run: measureFrameSlots('/assets/frame-classic-vertical.png', 3)
+ *    - slotCount: 1, 2, or 3 (default: 3)
  * 3. Click to mark top-left and bottom-right corners of each photo slot
- * 4. After 6 clicks (2 corners × 3 slots), coordinates are logged to console
+ * 4. After all clicks (2 × slotCount), coordinates are logged to console
  * 5. Copy output to frame-config.ts
+ *
+ * Or use the in-page tool at /measure-frames which provides a slot-count selector.
  */
 
-export function measureFrameSlots(imagePath: string): void {
+export function measureFrameSlots(
+  imagePath: string,
+  slotCount: 1 | 2 | 3 = 3,
+): void {
   const img = new Image();
 
   img.onerror = () => {
@@ -17,9 +23,11 @@ export function measureFrameSlots(imagePath: string): void {
   };
 
   img.onload = () => {
+    const totalClicks = slotCount * 2;
 
     // Create overlay
     const overlay = document.createElement('div');
+    overlay.id = 'measure-overlay';
     overlay.style.cssText = `
       position: fixed;
       top: 0;
@@ -48,8 +56,8 @@ export function measureFrameSlots(imagePath: string): void {
     `;
     instructions.innerHTML = `
       <strong>Frame Slot Measurement Tool</strong><br/>
-      Click 6 times to mark 3 photo slots (top-left, bottom-right for each slot)<br/>
-      <span id="click-counter">Clicks: 0/6</span>
+      Click ${totalClicks} times to mark ${slotCount} photo slot${slotCount > 1 ? 's' : ''} (top-left, bottom-right for each slot)<br/>
+      <span id="click-counter">Clicks: 0/${totalClicks}</span>
     `;
 
     // Canvas container
@@ -73,9 +81,92 @@ export function measureFrameSlots(imagePath: string): void {
     ctx.drawImage(img, 0, 0);
 
     const markers: Array<{ x: number; y: number }> = [];
-    let currentSlot = 0;
 
-    canvas.addEventListener('click', (e) => {
+    const finishMeasurement = () => {
+      // Build photoSlots array from pairs of markers
+      const photoSlots: Array<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      }> = [];
+
+      for (let i = 0; i < markers.length; i += 2) {
+        photoSlots.push({
+          x: markers[i].x,
+          y: markers[i].y,
+          width: markers[i + 1].x - markers[i].x,
+          height: markers[i + 1].y - markers[i].y,
+        });
+      }
+
+      const output = `photoSlots: [\n${photoSlots
+        .map(
+          (slot, i) =>
+            `  { x: ${slot.x}, y: ${slot.y}, width: ${slot.width}, height: ${slot.height} }, // Slot ${i + 1}`,
+        )
+        .join('\n')}\n],`;
+
+      // eslint-disable-next-line no-console
+      console.log(
+        '%cMeasured photoSlots for ' + imagePath,
+        'color: #00FF00; font-weight: bold; font-size: 14px;',
+      );
+      // eslint-disable-next-line no-console
+      console.log(output);
+
+      // Show output in the overlay
+      const resultBox = document.createElement('div');
+      resultBox.style.cssText = `
+        color: #0f0;
+        font-family: monospace;
+        font-size: 13px;
+        padding: 16px;
+        background: #222;
+        border-radius: 8px;
+        max-width: 600px;
+        white-space: pre;
+        overflow: auto;
+      `;
+      resultBox.textContent = output;
+      overlay.appendChild(resultBox);
+
+      // Disable further clicks
+      canvas.style.cursor = 'default';
+      canvas.removeEventListener('click', handleClick);
+
+      // Add close button
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'Close (or wait 8s)';
+      closeBtn.style.cssText = `
+        padding: 8px 16px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: monospace;
+        font-size: 14px;
+      `;
+      closeBtn.onclick = () => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      };
+      overlay.appendChild(closeBtn);
+
+      // Cleanup after delay
+      setTimeout(() => {
+        if (document.body.contains(overlay)) {
+          document.body.removeChild(overlay);
+        }
+      }, 8000);
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      // Stop after we have enough markers
+      if (markers.length >= totalClicks) return;
+
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
@@ -104,62 +195,23 @@ export function measureFrameSlots(imagePath: string): void {
           prevMarker.x,
           prevMarker.y,
           x - prevMarker.x,
-          y - prevMarker.y
+          y - prevMarker.y,
         );
       }
 
       // Update counter
       const counter = document.getElementById('click-counter');
       if (counter) {
-        counter.textContent = `Clicks: ${markers.length}/6 (Slot ${Math.floor(markers.length / 2) + 1})`;
+        counter.textContent = `Clicks: ${markers.length}/${totalClicks} (Slot ${Math.floor((markers.length - 1) / 2) + 1})`;
       }
 
-      // After 6 clicks, output results
-      if (markers.length === 6) {
-        // Build photoSlots array from 3 pairs of markers
-        const photoSlots = [0, 2, 4].map((i) => ({
-          x: markers[i].x,
-          y: markers[i].y,
-          width: markers[i + 1].x - markers[i].x,
-          height: markers[i + 1].y - markers[i].y,
-        }));
-
-        const output = `photoSlots: [\n${photoSlots
-          .map(
-            (slot, i) =>
-              `  { x: ${slot.x}, y: ${slot.y}, width: ${slot.width}, height: ${slot.height} }, // Slot ${i + 1}`,
-          )
-          .join('\n')}\n],`;
-
-        // eslint-disable-next-line no-console
-        console.log('%cMeasured photoSlots for ' + imagePath, 'color: #00FF00; font-weight: bold; font-size: 14px;');
-        // eslint-disable-next-line no-console
-        console.log(output);
-
-        // Show output in the overlay too
-        const resultBox = document.createElement('div');
-        resultBox.style.cssText = `
-          color: #0f0;
-          font-family: monospace;
-          font-size: 13px;
-          padding: 16px;
-          background: #222;
-          border-radius: 8px;
-          max-width: 600px;
-          white-space: pre;
-          overflow: auto;
-        `;
-        resultBox.textContent = output;
-        overlay.appendChild(resultBox);
-
-        // Cleanup after short delay
-        setTimeout(() => {
-          if (document.body.contains(overlay)) {
-            document.body.removeChild(overlay);
-          }
-        }, 8000);
+      // Once we hit the required clicks, finish
+      if (markers.length === totalClicks) {
+        finishMeasurement();
       }
-    });
+    };
+
+    canvas.addEventListener('click', handleClick);
 
     canvasContainer.appendChild(canvas);
     overlay.appendChild(instructions);
