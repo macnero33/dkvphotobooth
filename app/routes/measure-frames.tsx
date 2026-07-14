@@ -13,7 +13,7 @@ export default function MeasureFrames() {
 
   const handleMeasure = (frame: FrameConfig) => {
     setSelectedFrame(frame);
-    measureFrameSlots(frame.path);
+    measureFrameSlots(frame.path, frame.photoSlots.length);
   };
 
   return (
@@ -24,7 +24,9 @@ export default function MeasureFrames() {
         <h2>Instructions:</h2>
         <ol>
           <li>Click a frame below to load it</li>
-          <li>Click 6 times to mark photo slots (top-left, bottom-right for each of 3 slots)</li>
+          <li>
+            Click {selectedFrame?.photoSlots.length ?? 3} time{selectedFrame?.photoSlots.length === 1 ? '' : 's'} to mark photo slot{selectedFrame?.photoSlots.length === 1 ? '' : 's'} (top-left, bottom-right for each slot)
+          </li>
           <li>Coordinates will be logged to console</li>
           <li>Copy coordinates and update frame-config.ts</li>
         </ol>
