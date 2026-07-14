@@ -47,7 +47,7 @@ export default function MeasureFrames() {
             >
               <div style={{ fontWeight: 'bold' }}>{frame.name}</div>
               <div style={{ fontSize: '0.875rem', color: '#666' }}>
-                {frame.width}×{frame.height} ({frame.orientation})
+                {frame.width}×{frame.height} ({frame.orientation}) • {frame.photoSlots.length} photo{frame.photoSlots.length === 1 ? '' : 's'}
               </div>
               <img
                 src={frame.path}
