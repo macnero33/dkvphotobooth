@@ -16,13 +16,11 @@ export interface FrameConfig {
   path: string; // Asset path
   width: number; // Frame width
   height: number; // Frame height
-  orientation: 'vertical' | 'horizontal';
+  orientation: 'vertical';
   photoSlots: PhotoSlot[]; // One or more photo slots
   description?: string; // Optional frame description for UI
   isDefault?: boolean; // Default selection flag
 }
-
-export type FrameOrientation = 'vertical' | 'horizontal';
 
 /**
  * Frame configurations
@@ -72,17 +70,6 @@ export function getDefaultFrame(): FrameConfig {
  */
 export function getFrameById(id: string): FrameConfig | undefined {
   return FRAME_CONFIGS[id];
-}
-
-/**
- * Get all frames filtered by orientation
- */
-export function getFramesByOrientation(
-  orientation: FrameOrientation,
-): FrameConfig[] {
-  return Object.values(FRAME_CONFIGS).filter(
-    (f) => f.orientation === orientation,
-  );
 }
 
 /**
