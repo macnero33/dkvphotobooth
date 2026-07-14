@@ -116,11 +116,48 @@ export function measureFrameSlots(imagePath: string): void {
 
       // After 6 clicks, output results
       if (markers.length === 6) {
+        // Build photoSlots array from 3 pairs of markers
+        const photoSlots = [0, 2, 4].map((i) => ({
+          x: markers[i].x,
+          y: markers[i].y,
+          width: markers[i + 1].x - markers[i].x,
+          height: markers[i + 1].y - markers[i].y,
+        }));
+
+        const output = `photoSlots: [\n${photoSlots
+          .map(
+            (slot, i) =>
+              `  { x: ${slot.x}, y: ${slot.y}, width: ${slot.width}, height: ${slot.height} }, // Slot ${i + 1}`,
+          )
+          .join('\n')}\n],`;
+
+        // eslint-disable-next-line no-console
+        console.log('%cMeasured photoSlots for ' + imagePath, 'color: #00FF00; font-weight: bold; font-size: 14px;');
+        // eslint-disable-next-line no-console
+        console.log(output);
+
+        // Show output in the overlay too
+        const resultBox = document.createElement('div');
+        resultBox.style.cssText = `
+          color: #0f0;
+          font-family: monospace;
+          font-size: 13px;
+          padding: 16px;
+          background: #222;
+          border-radius: 8px;
+          max-width: 600px;
+          white-space: pre;
+          overflow: auto;
+        `;
+        resultBox.textContent = output;
+        overlay.appendChild(resultBox);
 
         // Cleanup after short delay
         setTimeout(() => {
-          document.body.removeChild(overlay);
-        }, 2000);
+          if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+          }
+        }, 8000);
       }
     });
 
