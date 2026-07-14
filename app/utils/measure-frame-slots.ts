@@ -9,8 +9,7 @@
  * 5. Copy output to frame-config.ts
  */
 
-export function measureFrameSlots(imagePath: string, slotCount = 3): void {
-  const totalClicks = slotCount * 2;
+export function measureFrameSlots(imagePath: string): void {
   const img = new Image();
 
   img.onerror = () => {
@@ -18,6 +17,7 @@ export function measureFrameSlots(imagePath: string, slotCount = 3): void {
   };
 
   img.onload = () => {
+
     // Create overlay
     const overlay = document.createElement('div');
     overlay.style.cssText = `
@@ -45,13 +45,11 @@ export function measureFrameSlots(imagePath: string, slotCount = 3): void {
       background: rgba(0, 0, 0, 0.8);
       border-radius: 8px;
       max-width: 600px;
-      text-align: center;
     `;
     instructions.innerHTML = `
       <strong>Frame Slot Measurement Tool</strong><br/>
-      Click ${totalClicks} times to mark ${slotCount} photo slot${slotCount > 1 ? 's' : ''}.<br/>
-      Each slot needs top-left and bottom-right points.<br/>
-      <span id="click-counter">Clicks: 0/${totalClicks}</span>
+      Click 6 times to mark 3 photo slots (top-left, bottom-right for each slot)<br/>
+      <span id="click-counter">Clicks: 0/6</span>
     `;
 
     // Canvas container
@@ -75,6 +73,7 @@ export function measureFrameSlots(imagePath: string, slotCount = 3): void {
     ctx.drawImage(img, 0, 0);
 
     const markers: Array<{ x: number; y: number }> = [];
+    let currentSlot = 0;
 
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -112,44 +111,16 @@ export function measureFrameSlots(imagePath: string, slotCount = 3): void {
       // Update counter
       const counter = document.getElementById('click-counter');
       if (counter) {
-        counter.textContent = `Clicks: ${markers.length}/${totalClicks}`;
+        counter.textContent = `Clicks: ${markers.length}/6 (Slot ${Math.floor(markers.length / 2) + 1})`;
       }
 
-      // Finished measurement
-      if (markers.length === totalClicks) {
-        const slots = [];
-        for (let i = 0; i < markers.length; i += 2) {
-          const topLeft = markers[i];
-          const bottomRight = markers[i + 1];
-          slots.push({
-            x: Math.min(topLeft.x, bottomRight.x),
-            y: Math.min(topLeft.y, bottomRight.y),
-            width: Math.abs(bottomRight.x - topLeft.x),
-            height: Math.abs(bottomRight.y - topLeft.y),
-          });
-        }
+      // After 6 clicks, output results
+      if (markers.length === 6) {
 
-        console.log('photoSlots:', JSON.stringify(slots, null, 2));
-        console.log('Use these values in app/lib/frame-config.ts under photoSlots');
-
-        const doneText = document.createElement('div');
-        doneText.style.cssText = `
-          color: white;
-          font-family: monospace;
-          font-size: 16px;
-          padding: 12px 16px;
-          background: rgba(0, 0, 0, 0.75);
-          border-radius: 8px;
-          margin-top: 12px;
-        `;
-        doneText.textContent = 'Measurement complete. Check the browser console for coordinates.';
-        overlay.appendChild(doneText);
-
+        // Cleanup after short delay
         setTimeout(() => {
-          if (document.body.contains(overlay)) {
-            document.body.removeChild(overlay);
-          }
-        }, 4000);
+          document.body.removeChild(overlay);
+        }, 2000);
       }
     });
 

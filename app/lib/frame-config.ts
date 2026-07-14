@@ -34,16 +34,15 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     id: 'classic-vertical',
     name: 'Classic',
     path: '/assets/frame-classic-vertical.png',
-    width: 514,
-    height: 1170,
+    width: 1181,
+    height: 1772,
     orientation: 'vertical',
     isDefault: true,
     photoSlots: [
-      // Measured coordinates accounting for brown frame borders
-      // Border margins: ~25px sides, ~20px top/bottom of each slot
-      { x: 50, y: 46, width: 418, height: 304 },
-      { x: 50, y: 384, width: 418, height: 304 },
-      { x: 50, y: 723, width: 418, height: 304 },
+      // Sized to match ifta.png reference (1181x1772)
+      { x: 115, y: 70, width: 951, height: 510 },
+      { x: 115, y: 631, width: 951, height: 510 },
+      { x: 115, y: 1192, width: 951, height: 510 },
     ],
   },
   ifta: {
@@ -61,41 +60,42 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     id: 'bright-bold-vertical',
     name: 'Bright & Bold',
     path: '/assets/frame-bright-and-bold-vertical.png',
-    width: 688,
-    height: 1506,
+    width: 1181,
+    height: 1772,
     orientation: 'vertical',
     photoSlots: [
-      // Measured coordinates accounting for decorative borders and oval shapes
-      // Border margins: ~60px sides, ~40px top/bottom, plus bottom text area
-      { x: 94, y: 110, width: 568, height: 370 },
-      { x: 94, y: 528, width: 568, height: 370 },
-      { x: 94, y: 935, width: 568, height: 370 },
+      // Sized to match ifta.png reference (1181x1772)
+      { x: 115, y: 70, width: 951, height: 510 },
+      { x: 115, y: 631, width: 951, height: 510 },
+      { x: 115, y: 1192, width: 951, height: 510 },
     ],
   },
   'elegant-horizontal': {
     id: 'elegant-horizontal',
     name: 'Elegant',
     path: '/assets/frame-elegant-horizontal.png',
-    width: 2758,
-    height: 988,
-    orientation: 'horizontal',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
     photoSlots: [
-      { x: 135, y: 130, width: 805, height: 526 },
-      { x: 978, y: 129, width: 802, height: 528 },
-      { x: 1811, y: 127, width: 805, height: 525 },
+      // Sized to match ifta.png reference (1181x1772)
+      { x: 115, y: 70, width: 951, height: 510 },
+      { x: 115, y: 631, width: 951, height: 510 },
+      { x: 115, y: 1192, width: 951, height: 510 },
     ],
   },
   'modern-horizontal': {
     id: 'modern-horizontal',
     name: 'Modern',
     path: '/assets/frame-modern-horizontal.png',
-    width: 2494,
-    height: 786,
-    orientation: 'horizontal',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
     photoSlots: [
-      { x: 76, y: 152, width: 705, height: 535 },
-      { x: 828, y: 144, width: 701, height: 548 },
-      { x: 1585, y: 140, width: 693, height: 546 },
+      // Sized to match ifta.png reference (1181x1772)
+      { x: 115, y: 70, width: 951, height: 510 },
+      { x: 115, y: 631, width: 951, height: 510 },
+      { x: 115, y: 1192, width: 951, height: 510 },
     ],
   },
 };
