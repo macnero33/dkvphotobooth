@@ -17,7 +17,8 @@ export interface FrameConfig {
   width: number; // Frame width
   height: number; // Frame height
   orientation: 'vertical' | 'horizontal';
-  photoSlots: [PhotoSlot, PhotoSlot, PhotoSlot]; // Exactly 3 slots
+  photoSlots: PhotoSlot[]; // One or more photo slots
+  description?: string; // Optional frame description for UI
   isDefault?: boolean; // Default selection flag
 }
 
@@ -84,6 +85,45 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
       { x: 76, y: 152, width: 705, height: 535 },
       { x: 828, y: 144, width: 701, height: 548 },
       { x: 1585, y: 140, width: 693, height: 546 },
+    ],
+  },
+  'single-with-text-left': {
+    id: 'single-with-text-left',
+    name: 'Single Photo + Text',
+    path: '/assets/frame-single-with-text-left.svg',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
+    description: 'Single photo with text area on the left',
+    photoSlots: [
+      { x: 450, y: 120, width: 676, height: 952 },
+    ],
+  },
+  'double-with-text-left': {
+    id: 'double-with-text-left',
+    name: 'Double Photo + Text',
+    path: '/assets/frame-double-with-text-left.svg',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
+    description: 'Two photos with text area on the left',
+    photoSlots: [
+      { x: 450, y: 110, width: 676, height: 380 },
+      { x: 450, y: 520, width: 676, height: 380 },
+    ],
+  },
+  'triple-with-text-left': {
+    id: 'triple-with-text-left',
+    name: 'Triple Photo + Text',
+    path: '/assets/frame-triple-with-text-left.svg',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
+    description: 'Three photos with text area on the left',
+    photoSlots: [
+      { x: 450, y: 100, width: 676, height: 300 },
+      { x: 450, y: 450, width: 676, height: 300 },
+      { x: 450, y: 800, width: 676, height: 300 },
     ],
   },
 };
