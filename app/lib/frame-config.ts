@@ -30,21 +30,6 @@ export type FrameOrientation = 'vertical' | 'horizontal';
  * TODO: Measure exact coordinates using image editor or measurement tool
  */
 export const FRAME_CONFIGS: Record<string, FrameConfig> = {
-  'classic-vertical': {
-    id: 'classic-vertical',
-    name: 'Classic',
-    path: '/assets/frame-classic-vertical.png',
-    width: 1181,
-    height: 1772,
-    orientation: 'vertical',
-    isDefault: true,
-    photoSlots: [
-      // Sized to match ifta.png reference (1181x1772)
-      { x: 115, y: 70, width: 951, height: 510 },
-      { x: 115, y: 631, width: 951, height: 510 },
-      { x: 115, y: 1192, width: 951, height: 510 },
-    ],
-  },
   ifta: {
     id: 'ifta',
     name: 'My New Frame',
@@ -52,6 +37,7 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     width: 1181,
     height: 1772,
     orientation: 'vertical',
+    isDefault: true,
     photoSlots: [
       { x: 105, y: 238, width: 973, height: 859 }, // Slot 1
     ],
@@ -69,48 +55,6 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
       { x: 582, y: 997, width: 533, height: 437 }, // Slot 3
     ],
   },
-  'bright-bold-vertical': {
-    id: 'bright-bold-vertical',
-    name: 'Bright & Bold',
-    path: '/assets/frame-bright-and-bold-vertical.png',
-    width: 1181,
-    height: 1772,
-    orientation: 'vertical',
-    photoSlots: [
-      // Sized to match ifta.png reference (1181x1772)
-      { x: 115, y: 70, width: 951, height: 510 },
-      { x: 115, y: 631, width: 951, height: 510 },
-      { x: 115, y: 1192, width: 951, height: 510 },
-    ],
-  },
-  'elegant-horizontal': {
-    id: 'elegant-horizontal',
-    name: 'Elegant',
-    path: '/assets/frame-elegant-horizontal.png',
-    width: 1181,
-    height: 1772,
-    orientation: 'vertical',
-    photoSlots: [
-      // Sized to match ifta.png reference (1181x1772)
-      { x: 115, y: 70, width: 951, height: 510 },
-      { x: 115, y: 631, width: 951, height: 510 },
-      { x: 115, y: 1192, width: 951, height: 510 },
-    ],
-  },
-  'modern-horizontal': {
-    id: 'modern-horizontal',
-    name: 'Modern',
-    path: '/assets/frame-modern-horizontal.png',
-    width: 1181,
-    height: 1772,
-    orientation: 'vertical',
-    photoSlots: [
-      // Sized to match ifta.png reference (1181x1772)
-      { x: 115, y: 70, width: 951, height: 510 },
-      { x: 115, y: 631, width: 951, height: 510 },
-      { x: 115, y: 1192, width: 951, height: 510 },
-    ],
-  },
 };
 
 /**
@@ -119,7 +63,7 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
 export function getDefaultFrame(): FrameConfig {
   return (
     Object.values(FRAME_CONFIGS).find((f) => f.isDefault) ||
-    FRAME_CONFIGS['classic-vertical']
+    FRAME_CONFIGS['ifta']
   );
 }
 
