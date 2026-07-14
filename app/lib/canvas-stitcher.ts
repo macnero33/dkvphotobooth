@@ -132,7 +132,7 @@ export async function stitchPhotos(
           }
         },
         'image/jpeg',
-        0.92 // Quality 92% (slightly higher for larger frames)
+        0.8 // Quality 80% for faster upload and smaller file size
       );
     });
   } finally {

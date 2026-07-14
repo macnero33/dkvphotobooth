@@ -38,7 +38,8 @@ export function CountdownView({
           ref={webcamRef}
           audio={false}
           screenshotFormat="image/jpeg"
-          screenshotQuality={0.92}
+          screenshotQuality={0.8}
+          screenshotWidth={960}
           videoConstraints={videoConstraints}
           mirrored={true}
           onUserMedia={onWebcamReady}
