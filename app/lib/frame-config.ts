@@ -46,6 +46,17 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
       { x: 50, y: 723, width: 418, height: 304 },
     ],
   },
+  'ifta-frame': {
+  id: 'ifta',
+  name: 'My New Frame',
+  path: '/assets/ifta.png',
+  width: 1200,
+  height: 1800,
+  orientation: 'vertical',
+  photoSlots: [
+    { x: 400, y: 120, width: 680, height: 960 },
+  ],
+},
   'bright-bold-vertical': {
     id: 'bright-bold-vertical',
     name: 'Bright & Bold',
