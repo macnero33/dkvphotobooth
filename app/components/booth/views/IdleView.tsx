@@ -132,17 +132,17 @@ export function IdleView({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-8">
-      <div className="text-center space-y-8">
-        <h1 className="text-6xl font-bold animate-pulse text-gray-900">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-4 sm:p-6 md:p-8">
+      <div className="text-center space-y-4 sm:space-y-6 md:space-y-8 w-full max-w-5xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold animate-pulse text-gray-900">
           DKV Receipt
         </h1>
-        <p className="text-2xl text-gray-500">
+        <p className="text-lg sm:text-xl md:text-2xl text-gray-500">
           Your instant photobooth experience
         </p>
 
         {/* Camera status indicator */}
-        <div className="mt-8">
+        <div className="mt-4 sm:mt-6 md:mt-8">
           {cameraStatus === 'checking' && (
             <div className="flex items-center justify-center gap-2 text-yellow-600">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
@@ -191,13 +191,13 @@ export function IdleView({
         </div>
 
         {/* Frame Selection Section */}
-        <div className="mt-8 space-y-4 max-w-5xl mx-auto">
-          <h2 className="text-3xl font-semibold">
+        <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4 mx-auto">
+          <h2 className="text-2xl sm:text-2xl md:text-3xl font-semibold">
             Choose Your Frame
           </h2>
 
-          {/* Frame Grid */}
-          <div className="grid grid-cols-4 gap-3 mt-6">
+          {/* Frame Grid - responsive: 2 cols on mobile, 3 on tablet, 4 on desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mt-4 sm:mt-6">
             {frames.map((frame) => (
               <button
                 key={frame.id}
@@ -253,23 +253,23 @@ export function IdleView({
           </div>
         </div>
 
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-10 md:mt-12">
           <Button
             onClick={onStart}
             disabled={cameraStatus !== 'granted'}
             size="lg"
-            className="text-2xl px-12 py-8 bg-gray-800 text-white hover:bg-gray-700 hover:scale-105 transition-all duration-300 rounded-full shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="text-lg sm:text-xl md:text-2xl px-8 sm:px-10 md:px-12 py-6 sm:py-7 md:py-8 bg-gray-800 text-white hover:bg-gray-700 hover:scale-105 transition-all duration-300 rounded-full shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Start Photo Session
           </Button>
         </div>
 
-        <div className="mt-16 text-gray-500 space-y-2">
-          <p className="text-lg">
+        <div className="mt-10 sm:mt-12 md:mt-16 text-gray-500 space-y-1 sm:space-y-2">
+          <p className="text-base sm:text-lg">
             ✓ Takes {selectedFrame?.photoSlots.length ?? 3} photo{selectedFrame?.photoSlots.length === 1 ? '' : 's'} with countdown
           </p>
-          <p className="text-lg">✓ Creates instant photo strip</p>
-          <p className="text-lg">✓ Download via QR code</p>
+          <p className="text-base sm:text-lg">✓ Creates instant photo strip</p>
+          <p className="text-base sm:text-lg">✓ Download via QR code</p>
         </div>
       </div>
     </div>

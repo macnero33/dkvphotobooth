@@ -58,39 +58,39 @@ export function SuccessView({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-8">
-      <div className="text-center space-y-8 max-w-4xl">
-        <div className="space-y-4">
-          <div className="text-6xl text-green-500">✓</div>
-          <h2 className="text-5xl font-bold text-gray-800">All Done!</h2>
-          <p className="text-2xl text-gray-500">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-white to-gray-200 text-gray-800 p-4 sm:p-6 md:p-8">
+      <div className="text-center space-y-6 sm:space-y-8 w-full max-w-4xl">
+        <div className="space-y-2 sm:space-y-4">
+          <div className="text-4xl sm:text-5xl md:text-6xl text-green-500">✓</div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800">All Done!</h2>
+          <p className="text-xl sm:text-2xl text-gray-500">
             Your photo strip is ready
           </p>
         </div>
 
-        {/* Display all 3 captured photos */}
-        <div className="flex justify-center gap-4 flex-wrap">
+        {/* Display all captured photos - responsive grid */}
+        <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
           {images.map((image, index) => (
             <div
               key={index}
-              className="bg-white p-3 rounded-lg shadow-2xl"
+              className="bg-white p-2 sm:p-3 rounded-lg shadow-2xl"
             >
               <img
                 src={image}
                 alt={`Photo ${index + 1}`}
-                className="w-48 h-auto rounded shadow-lg"
+                className="w-24 sm:w-32 md:w-48 h-auto rounded shadow-lg"
               />
-              <p className="text-gray-700 text-sm mt-2 font-semibold">
+              <p className="text-gray-700 text-xs sm:text-sm mt-1 sm:mt-2 font-semibold">
                 Photo {index + 1}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Photo Strip and QR Code - responsive layout based on orientation */}
+        {/* Photo Strip and QR Code - responsive layout */}
         <div
           className={cn(
-            'flex justify-center items-start gap-8 flex-wrap',
+            'flex justify-center items-start gap-6 sm:gap-8 flex-wrap',
             imageOrientation === 'horizontal'
               ? 'flex-col items-center'
               : '',
@@ -98,26 +98,26 @@ export function SuccessView({
         >
           {/* Final stitched photo strip */}
           <div className="flex flex-col items-center">
-            <h3 className="text-2xl font-semibold mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
               Final Photo Strip
             </h3>
-            <div className="bg-white p-4 rounded-lg shadow-2xl">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-2xl">
               <img
                 src={uploadUrl}
                 alt="Your photo strip"
                 className={cn(
                   'rounded shadow-lg',
                   imageOrientation === 'vertical'
-                    ? 'w-64 h-auto'
-                    : 'h-64 w-auto',
+                    ? 'w-40 sm:w-48 md:w-64 h-auto'
+                    : 'h-40 sm:h-48 md:h-64 w-auto',
                 )}
               />
             </div>
-            <div className="mt-4 flex gap-3 flex-wrap justify-center">
+            <div className="mt-3 sm:mt-4 flex gap-2 sm:gap-3 flex-wrap justify-center">
               <Button
                 onClick={handleDownload}
                 size="lg"
-                className="text-lg px-6 py-4 bg-gray-800 text-white hover:bg-gray-700 rounded-full"
+                className="text-base sm:text-lg px-4 sm:px-5 md:px-6 py-3 sm:py-4 bg-gray-800 text-white hover:bg-gray-700 rounded-full"
               >
                 Download Strip
               </Button>
@@ -125,7 +125,7 @@ export function SuccessView({
                 onClick={handleCopyLink}
                 size="lg"
                 variant="outline"
-                className="text-lg px-6 py-4 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
+                className="text-base sm:text-lg px-4 sm:px-5 md:px-6 py-3 sm:py-4 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
               >
                 {copyStatus}
               </Button>
@@ -134,50 +134,51 @@ export function SuccessView({
 
           {/* QR Code with Instructions and Button */}
           <div className="flex flex-col items-center">
-            <h3 className="text-2xl font-semibold mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">
               Scan to Download
             </h3>
-            <div className="bg-white p-8 rounded-2xl shadow-2xl">
-              <div className="mb-4">
-                <p className="text-gray-600 text-center">
+            <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl">
+              <div className="mb-3 sm:mb-4">
+                <p className="text-gray-600 text-sm sm:text-base text-center">
                   Use your phone camera
                 </p>
               </div>
               <QRCodeSVG
                 value={retrievalUrl}
-                size={256}
+                size={180}
                 level="H"
                 includeMargin={true}
+                className="w-32 sm:w-40 md:w-56 h-auto mx-auto"
               />
             </div>
-            <div className="mt-4 text-sm text-gray-500 break-all text-center max-w-xs">
+            <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-500 break-all text-center max-w-[200px] sm:max-w-[280px]">
               {retrievalUrl}
             </div>
             {isInternalPhotoRoute ? (
-              <div className="mt-4 text-sm text-yellow-700 bg-yellow-50 p-3 rounded-lg border border-yellow-300">
+              <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-yellow-700 bg-yellow-50 p-2 sm:p-3 rounded-lg border border-yellow-300">
                 Warning: this link looks like an internal app route. It should be a
                 direct Supabase URL for reliable download.
               </div>
             ) : (
-              <div className="mt-4 text-sm text-green-700 bg-green-50 p-3 rounded-lg border border-green-300">
+              <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-green-700 bg-green-50 p-2 sm:p-3 rounded-lg border border-green-300">
                 Good: this is a direct download URL from Supabase.
               </div>
             )}
 
             {/* Instructions below QR code */}
-            <div className="mt-6 space-y-2 text-lg text-gray-600">
+            <div className="mt-4 sm:mt-6 space-y-1 sm:space-y-2 text-base sm:text-lg text-gray-600">
               <p>📱 Open your phone camera</p>
               <p>📸 Point at the QR code</p>
               <p>💾 Download your photo strip</p>
             </div>
 
             {/* Start New Session button */}
-            <div className="mt-6">
+            <div className="mt-4 sm:mt-6">
               <Button
                 onClick={onReset}
                 size="lg"
                 variant="outline"
-                className="text-xl px-8 py-6 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
+                className="text-lg sm:text-xl px-6 sm:px-8 py-5 sm:py-6 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
               >
                 Start New Session
               </Button>
@@ -185,7 +186,7 @@ export function SuccessView({
           </div>
         </div>
 
-        <p className="text-sm text-gray-400">
+        <p className="text-xs sm:text-sm text-gray-400">
           This session will auto-reset in 60 seconds
         </p>
       </div>

@@ -98,30 +98,30 @@ export default function PhotoRetrieval() {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Photo Not Found</h1>
-          <p className="text-xl text-gray-400">Invalid photo ID</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Photo Not Found</h1>
+          <p className="text-lg sm:text-xl text-gray-400">Invalid photo ID</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-gray-200 flex flex-col items-center justify-center p-4">
-      <div className="max-w-4xl w-full space-y-6">
-        <div className="text-center text-gray-800 space-y-2">
-          <h1 className="text-4xl font-bold">Your Photo Strip</h1>
-          <p className="text-xl text-gray-500">DKV Receipt Photobooth</p>
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-200 flex flex-col items-center justify-center p-3 sm:p-4">
+      <div className="max-w-lg sm:max-w-xl md:max-w-4xl w-full space-y-4 sm:space-y-6">
+        <div className="text-center text-gray-800 space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Your Photo Strip</h1>
+          <p className="text-lg sm:text-xl text-gray-500">DKV Receipt Photobooth</p>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl shadow-2xl min-h-[320px] flex items-center justify-center">
+        <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-2xl min-h-[200px] sm:min-h-[320px] flex items-center justify-center">
           {loading ? (
             <div className="text-center text-slate-900">
-              <p className="text-2xl font-semibold">Loading photo...</p>
+              <p className="text-xl sm:text-2xl font-semibold">Loading photo...</p>
             </div>
           ) : errorMessage ? (
             <div className="text-center text-slate-900">
-              <p className="text-2xl font-semibold">Unable to load photo</p>
-              <p className="text-lg text-slate-600 mt-4">{errorMessage}</p>
+              <p className="text-xl sm:text-2xl font-semibold">Unable to load photo</p>
+              <p className="text-base sm:text-lg text-slate-600 mt-3 sm:mt-4">{errorMessage}</p>
             </div>
           ) : (
             <img
@@ -136,11 +136,11 @@ export default function PhotoRetrieval() {
           )}
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Button
             onClick={handleDownload}
             size="lg"
-            className="flex-1 text-lg py-6 bg-gray-800 text-white hover:bg-gray-700 hover:scale-105 transition-all duration-300 rounded-full shadow-xl"
+            className="flex-1 text-base sm:text-lg py-5 sm:py-6 bg-gray-800 text-white hover:bg-gray-700 hover:scale-105 transition-all duration-300 rounded-full shadow-xl"
             disabled={!imageUrl || loading}
           >
             📥 Download
@@ -150,18 +150,18 @@ export default function PhotoRetrieval() {
             onClick={handleShare}
             size="lg"
             variant="outline"
-            className="flex-1 text-lg py-6 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
+            className="flex-1 text-base sm:text-lg py-5 sm:py-6 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-full"
           >
             📤 Share
           </Button>
         </div>
 
-        <div className="text-center text-gray-500 text-sm space-y-1">
+        <div className="text-center text-gray-500 text-xs sm:text-sm space-y-1">
           <p>• The QR contains the same page link.</p>
           <p>• If the photo has expired, it may no longer be available.</p>
         </div>
 
-        <div className="text-center text-gray-400 text-xs pt-4">
+        <div className="text-center text-gray-400 text-xs pt-2 sm:pt-4">
           <p>Powered by DKV Receipt Photobooth</p>
         </div>
       </div>
