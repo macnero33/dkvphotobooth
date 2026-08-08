@@ -1,4 +1,4 @@
-import { supabase, STORAGE_BUCKET } from './supabase-client';
+import { requireSupabase, STORAGE_BUCKET } from './supabase-client';
 
 export interface SupabaseUploadResult {
   url: string;
@@ -33,6 +33,8 @@ export async function uploadToSupabase(
   const filePath = fileName;
 
   const uploadPromise = (async () => {
+    const supabase = requireSupabase();
+
     const { data, error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(filePath, blob, {

@@ -53,6 +53,17 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
       { x: 582, y: 997, width: 533, height: 437 }, // Slot 3
     ],
   },
+  greenCollage: {
+    id: 'greenCollage',
+    name: 'Green Collage',
+    path: '/assets/green-collage.png',
+    width: 1181,
+    height: 1772,
+    orientation: 'vertical',
+    photoSlots: [
+      { x: 32, y: 468, width: 1109, height: 874 }, // Verified slot bounds for the central photo area
+    ],
+  },
 };
 
 /**
