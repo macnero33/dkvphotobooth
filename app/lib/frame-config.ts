@@ -35,7 +35,6 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     width: 1181,
     height: 1772,
     orientation: 'vertical',
-    isDefault: true,
     photoSlots: [
       { x: 105, y: 238, width: 973, height: 859 }, // Slot 1
     ],
@@ -60,6 +59,7 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     width: 1181,
     height: 1772,
     orientation: 'vertical',
+    isDefault: true,
     photoSlots: [
       { x: 32, y: 468, width: 1109, height: 874 }, // Verified slot bounds for the central photo area
     ],
