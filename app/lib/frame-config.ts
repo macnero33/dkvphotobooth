@@ -64,17 +64,6 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
       { x: 31, y: 466, width: 1112, height: 876 }, // Slot 1
     ],
   },
-  karyaSeni: {
-    id: 'karyaSeni',
-    name: 'Karya Seni',
-    path: '/assets/Karya_Seni_Tanpa_Judul.jpg',
-    width: 3691,
-    height: 5538,
-    orientation: 'vertical',
-    photoSlots: [
-      { x: 31, y: 466, width: 1112, height: 876 }, // Slot 1
-    ],
-  },
 };
 
 /**
