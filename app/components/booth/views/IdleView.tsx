@@ -221,7 +221,7 @@ export function IdleView({
                   <img
                     src={frame.path}
                     alt={frame.name}
-                    className="w-full h-full object-cover object-center bg-transparent"
+                    className="w-full h-full object-contain bg-white"
                     onError={(event) => {
                       const target = event.currentTarget;
                       if (target.src !== window.location.origin + '/assets/green-collage.png') {
