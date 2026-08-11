@@ -63,8 +63,8 @@ export const boothMachine = createMachine(
       error: null,
       countdown: 3,
       uploadRetries: 0,
-      selectedFrameId: getDefaultFrame().id,
-      photoCount: getDefaultFrame().photoSlots.length,
+      selectedFrameId: 'greenCollage',
+      photoCount: getFrameById('greenCollage')?.photoSlots.length ?? 1,
     },
     states: {
       idle: {
@@ -78,8 +78,8 @@ export const boothMachine = createMachine(
           error: null,
           countdown: 3,
           uploadRetries: 0,
-          selectedFrameId: getDefaultFrame().id,
-          photoCount: getDefaultFrame().photoSlots.length,
+          selectedFrameId: 'greenCollage',
+          photoCount: getFrameById('greenCollage')?.photoSlots.length ?? 1,
         }),
         on: {
           START: {

@@ -70,10 +70,7 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
  * Get the default frame configuration
  */
 export function getDefaultFrame(): FrameConfig {
-  return (
-    Object.values(FRAME_CONFIGS).find((f) => f.isDefault) ||
-    FRAME_CONFIGS['ifta']
-  );
+  return FRAME_CONFIGS['greenCollage'] || FRAME_CONFIGS['ifta'];
 }
 
 /**
