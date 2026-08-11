@@ -30,7 +30,7 @@ export interface FrameConfig {
 export const FRAME_CONFIGS: Record<string, FrameConfig> = {
   karyaSeniTanpaJudul: {
     id: 'karyaSeniTanpaJudul',
-    name: 'Karya Seni Tanpa Judul',
+    name: 'Graduate',
     path: '/assets/Karya_Seni_Tanpa_Judul.png',
     width: 3691,
     height: 5538,
