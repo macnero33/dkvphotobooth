@@ -196,8 +196,8 @@ export function IdleView({
             Choose Your Frame
           </h2>
 
-          {/* Frame Grid - responsive: 2 cols on mobile, 3 on tablet, 4 on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mt-4 sm:mt-6">
+          {/* Frame Grid - matches the intended card mockup */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 sm:mt-6">
             {frames.map((frame) => (
               <button
                 key={frame.id}
@@ -209,51 +209,34 @@ export function IdleView({
                   dispatch({ type: 'HOVER', id: null })
                 }
                 className={cn(
-                  'relative p-1.5 rounded-lg border-2 transition-all duration-200',
-                  'hover:scale-105 hover:shadow-xl bg-white',
+                  'relative overflow-hidden rounded-[18px] border-[3px] transition-all duration-200 bg-[#f5f5f5] p-0 shadow-sm',
+                  'hover:scale-[1.01] hover:shadow-lg',
                   selectorState.selectedId === frame.id
-                    ? 'border-yellow-400 shadow-2xl'
-                    : 'border-gray-200',
+                    ? 'border-[#f3c400] shadow-[0_0_0_3px_rgba(243,196,0,0.15)]'
+                    : 'border-[#e5e7eb]',
                 )}
               >
-                {/* Frame Preview */}
-                <div className="aspect-[3/4] bg-gray-100 rounded overflow-hidden">
-                  <img
-                    src={frame.path}
-                    alt={frame.name}
-                    className="w-full h-full object-contain bg-white"
-                    onError={(event) => {
-                      const target = event.currentTarget;
-                      if (target.src !== window.location.origin + '/assets/green-collage.png') {
-                        target.src = '/assets/green-collage.png';
-                      }
-                    }}
-                  />
+                <div className="absolute left-3 top-3 z-10 flex items-center justify-center rounded-full bg-[#f3c400] text-gray-800 w-7 h-7 text-lg font-bold shadow-sm">
+                  {selectorState.selectedId === frame.id ? '✓' : ''}
                 </div>
 
-                {/* Frame Name */}
-                <p className="mt-1 text-xs font-medium text-gray-700">
-                  {frame.name}
-                </p>
+                <div className="absolute right-3 top-3 z-10 flex items-center justify-center rounded-full border border-[#3ea6e6] bg-[#dff7ff] text-[#1f6ba7] w-7 h-7 text-xl font-bold shadow-sm">
+                  i
+                </div>
 
-                {/* Orientation Badge */}
-                <span
-                  className={cn(
-                    'absolute top-2 right-2 px-1.5 py-0.5 text-[10px] rounded-full font-semibold text-white',
-                    frame.orientation === 'vertical'
-                      ? 'bg-blue-500'
-                      : 'bg-purple-500',
-                  )}
-                >
-                  {frame.orientation === 'vertical' ? '↕' : '↔'}
-                </span>
-
-                {/* Selected Indicator */}
-                {selectorState.selectedId === frame.id && (
-                  <div className="absolute top-1 left-1 text-lg bg-yellow-400 rounded-full w-6 h-6 flex items-center justify-center text-gray-800">
-                    ✓
+                <div className="p-3">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-[10px] border border-gray-200 bg-[#e9e9e9]">
+                    <img
+                      src={frame.path}
+                      alt={frame.name}
+                      className="h-full w-full object-contain object-center bg-white"
+                    />
                   </div>
-                )}
+
+                  <p className="mt-3 text-center text-[15px] font-semibold text-gray-800 truncate px-1">
+                    {frame.name}
+                  </p>
+                </div>
               </button>
             ))}
           </div>
