@@ -28,6 +28,18 @@ export interface FrameConfig {
  * TODO: Measure exact coordinates using image editor or measurement tool
  */
 export const FRAME_CONFIGS: Record<string, FrameConfig> = {
+  karyaSeniTanpaJudul: {
+    id: 'karyaSeniTanpaJudul',
+    name: 'Karya Seni Tanpa Judul',
+    path: '/assets/Karya_Seni_Tanpa_Judul.png',
+    width: 3691,
+    height: 5538,
+    orientation: 'vertical',
+    isDefault: true,
+    photoSlots: [
+      { x: 190, y: 970, width: 3310, height: 2650 }, // Main portrait area
+    ],
+  },
   ifta: {
     id: 'ifta',
     name: 'My New Frame',
@@ -59,7 +71,6 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
     width: 1181,
     height: 1772,
     orientation: 'vertical',
-    isDefault: true,
     photoSlots: [
       { x: 31, y: 466, width: 1112, height: 876 }, // Slot 1
     ],
@@ -70,7 +81,12 @@ export const FRAME_CONFIGS: Record<string, FrameConfig> = {
  * Get the default frame configuration
  */
 export function getDefaultFrame(): FrameConfig {
-  return FRAME_CONFIGS['greenCollage'] || FRAME_CONFIGS['ifta'];
+  return (
+    FRAME_CONFIGS['karyaSeniTanpaJudul'] ||
+    Object.values(FRAME_CONFIGS).find((frame) => frame.isDefault) ||
+    FRAME_CONFIGS['greenCollage'] ||
+    FRAME_CONFIGS['ifta']
+  );
 }
 
 /**
